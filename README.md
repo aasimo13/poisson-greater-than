@@ -1,4 +1,12 @@
-# Poisson GREATER-THAN: audit code and results
+# Computing A > B with fewer photons
+
+Two separate light sources can let one photon counter decide whether A > B using 39% fewer detected photons than the best possible threshold scheme. The trick is to reorder each source's brightness levels so the pairs fall into alternating bands, which moves the hard decisions into dim light where photon noise is small. The threshold baseline is proved optimal, and the new design is certified within 0.55% of the best any scheme can do. This holds in an idealized model (perfect detector, no stray light, sources that switch fully off); stray light shrinks the saving to about 10% at one stray count per window.
+
+![The 16 input pairs for each design on a square root photon scale, with the decoder's answer shaded and the close calls marked](figures/fig_bands.png)
+
+Run `./reproduce.sh quick` to check 22 headline numbers in about two minutes.
+
+## The problem
 
 Two transmitters hold integers A and B in {0..K-1}. Each one sends out a nonnegative light intensity, x[A] and y[B], without seeing the other. A single photon counter sees N, a Poisson count with mean x[A] + y[B] + background. The receiver may use any randomized function of N to decide whether A > B (ties count as false). The worst case error over all K squared pairs must be at most 1%. The cost is P, the largest expected number of detected photons over all pairs, which is max(x) + max(y). The question is how small P can be, and what the encoders look like. The headline case is K = 4, where a threshold style design needs about 321.5 photons and a "peeled band" design with an alternating decoder needs about 196.6, against a certified lower bound of 195.53.
 
