@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-25",
+  "base_commit": "08b0ef546e9492177b93a61b0ff2b09539a4be1d",
+  "original_quick_checks": {
+    "passed": 33,
+    "failed": 0,
+    "scope": "Quick suite includes K=3 lower-bound recomputation. Long K=4 bound inspected, not rerun."
+  },
+  "extension_unit_tests": {
+    "passed": 24,
+    "failed": 0
+  },
+  "extension_reproduction_command": "bash reproduce.sh extensions",
+  "extension_reproduction_exit_code": 0,
+  "serialized_adaptive_policies_independently_replayed": 13,
+  "maximum_replayed_adaptive_error": 0.009999000427111831,
+  "maximum_conservative_tail_charge": 2.412514632510465e-13,
+  "all_reported_fixed_errors_below_limit": true,
+  "local_document_links_resolve": true,
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "artifact_sha256": {
+    "docs/feedback_methods.md": "0286da95150d15e8088a0ba39c5e28c6796a47cadae77a288f947a13f5715d38",
+    "docs/related_work.md": "66d2024fa4c663999e6d77b10740243096023f86bb8425fa38dc3a1bd131bbfe",
+    "docs/research_note.md": "fbc2c728518afd3e87d363088ae40492f205e7711115192198c10e44f7ab9f57",
+    "docs/resource_methods.md": "cf98d89940d03ef7775b5170c073bbb34241eb706cbb7d990c02db3494b00e06",
+    "docs/theory.md": "fd27bf5d1c31ca3ee20efc268e2eaa84fbbb2532d5b371141f94e3fad1d60877",
+    "figures/fig_resources.png": "6579b234a40f13eed8c6cb85275a95e3de04edb83565599bfd3a391fd5f4ec0d",
+    "figures/fig_resources.svg": "e058386fe34f0f3a5391c37e260e4c6bf68880a248aaeb15c4640905f4c877fa",
+    "results/feedback_sequence.json": "99750c3bb7d7387e8ed3392e93828c4ec27112c858673498521c3508cdbbac85",
+    "results/resource_benchmark.json": "1c0d9aebe640eca859e716fcc0d24361e7a829571ebd23397ec1eb26535e6ed3",
+    "src/feedback_sequence.py": "815698bb83f91d92248ec25002a1091f8b062462f0c4053913540ccf3000d0cc",
+    "src/figure_resources.py": "853e42061c0096b3a02b7097a1c6cb21f6e089bc11482c74d62aaf4844ccd37b",
+    "src/gaussian_theorem.py": "47523a616b8fb0003a618a58239103e66cc826c8e6eb92ff506b05e18e81266d",
+    "src/resource_benchmark.py": "9d2730ffe522a9390429a4f254b181f634e9d8089025bbc3e4d1cbad2d51d214",
+    "tests/test_feedback_sequence.py": "f6ec4f14d7205c9693747fdd7bde8ad949d9f968ed3293514dee117c8397fadf",
+    "tests/test_gaussian_theorem.py": "ae0cb5eccd57a3f08b944c663ff4ddcb8e20ef01be4a2f2b0d1e13a348717841",
+    "tests/test_resource_benchmark.py": "d9f6a558e5b323dfb7c57c3fce88550fc82f6074cf1869108f2eb62f0f614c3a",
+    "tests/test_threshold_certificate.py": "0fb301354e055667378cd0ac480e2e8241c19d9f3605f68fed0f321d8e060813",
+    "README.md": "01ede3840e3c8f127c6503336a0001ee4c8f1e90cb3e566d086a2afb8cc5c6e9",
+    "reproduce.sh": "2dc8204879f796c24df337bbf848f747610cdae5fff1a3dcf132b27f88324014",
+    "src/threshold_optimum.py": "7404a4309e24125df8f87a4044a71cd9619a50afc9495b4e5653403a1479565b",
+    "src/verify_candidate.py": "a19e5f478c211c15c6b1c692023a22ed6a8305797fc01289c0e898a30342e422"
+  }
+}
