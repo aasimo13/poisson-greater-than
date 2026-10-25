@@ -105,6 +105,11 @@ quick() {
   check "joint argmax K=3 cost (one counter, three transmitters)" "$(sed -n 's/^cost \([0-9.]*\)$/\1/p' "$TMP/am.txt")" 1768.1 0.05
   TIMECOMP_OUT="$TMP/tc.json" $PY src/timecomp.py > "$TMP/tc.txt" 2>&1; show < "$TMP/tc.txt"
   check "arrival time comparator cost (4 slots, beta 0)" "$(sed -n 's/^cost \([0-9.]*\) .*/\1/p' "$TMP/tc.txt")" 20.97 0.005
+  echo "== 10. threshold_family.py (sum thresholds are smaller comparisons)"
+  $PY src/threshold_family.py > "$TMP/tf.txt" 2>&1; show < "$TMP/tf.txt"
+  check "threshold equivalences hold, K = 2..8" "$(grep -c '^Equivalences hold' "$TMP/tf.txt")" 1 0
+  check "margin 2 (K=4) deterministic design, worst error %" \
+    "$(sed -n 's/.*worst error = \([0-9.]*\)%.*/\1/p' "$TMP/tf.txt")" 0.99995769 0.0000001
 
   echo
   echo "============ SUMMARY ============"

@@ -17,7 +17,7 @@ Two negatives are recorded as well: a joint encoding of three sources on one det
 
 ![The 16 input pairs for each design on a square root photon scale, with the decoder's answer shaded and the close calls marked](figures/fig_bands.png)
 
-Run `./reproduce.sh quick` to check 37 headline numbers in about four minutes.
+Run `./reproduce.sh quick` to check 39 headline numbers in about four minutes.
 
 ## The problem
 
@@ -50,6 +50,8 @@ Status words: "verified" means recomputed here with exact style arithmetic (mpma
 | Error target 0.1%, 0.3%, 1%, 3%, 10%: banded vs threshold optimum | 354.7 vs 567.0, 262.3 vs 448.4, 196.5 vs 321.5, 137.0 vs 210.2, 74.8 vs 97.9 | numerical (banded); corner formula on a grid (threshold) |
 | Drift plus background, banded vs monotone (bg 0.1 / 1 / 3 counts) | +-2%: 251.8 vs 405.1, 318.7 vs 406.5; +-5%: 288.8 vs 598.4, 366.7 vs 600.5, 435.4 vs 605.8 | numerical upper bound |
 | Calibration every 10,000 decisions, +-5% drift (src/calibration.py) | saving 41.8% with no background, 15.1% at 1 count | model on interpolated numerical results |
+| Sum thresholds: margin d on K levels (A - B >= d, or any A + B >= T) equals A > B on K - d + 1 levels (src/threshold_family.py) | margin 2 on K = 4 is the K = 3 comparator: 126.05 vs 57.56 | proved (exact reduction both ways, checked K = 2 to 8) |
+| K = 3 comparator under background, threshold vs banded (bg 0 / 0.1 / 1 / 3 counts, src/background_k3.py) | 126.1 vs 57.6, 126.1 vs 70.5, 128.8 vs 94.5, 134.1 vs 115.4 (saving 54%, 44%, 27%, 14%) | numerical upper bound |
 
 The remaining drift, background and error target runs are in results/ (raw JSON lines). results/bgdrift.jsonl designs can be rechecked with src/check_bgdrift.py. That check finds that a few designs are at up to 1.0009% error when the decoder fitted on a 41 point gain grid is tested at 401 gains, so those drift numbers are good to roughly a tenth of a percent in error, not exact. The values in the table above are the rescaled ones: the affected banded designs were scaled up 0.05% until the dense check passed at 1%.
 
@@ -110,7 +112,7 @@ src/argmax_joint.py asks whether three sources on one detector can be encoded so
 ## Quick start
 
     python3 -m pip install -r requirements.txt
-    ./reproduce.sh quick        # about 2 minutes, 33 checks; prints each headline number next to its expected value, PASS or FAIL
+    ./reproduce.sh quick        # about 4 minutes, 39 checks; prints each headline number next to its expected value, PASS or FAIL
     ./reproduce.sh full         # lists the long jobs with their exact commands
     ./reproduce.sh full --run   # runs them one after another (hours); queue scripts write to results/rerun/
 

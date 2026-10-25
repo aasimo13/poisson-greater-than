@@ -1,0 +1,7 @@
+{"background": 0.0, "threshold": 126.1, "banded": 57.6, "saving_pct": 54.3}
+{"background": 0.1, "threshold": 126.1, "banded": 70.5, "saving_pct": 44.1}
+{"background": 0.3, "threshold": 127.3, "banded": 79.9, "saving_pct": 37.2}
+{"background": 0.5, "threshold": 127.4, "banded": 84.9, "saving_pct": 33.4}
+{"background": 1.0, "threshold": 128.8, "banded": 94.5, "saving_pct": 26.6}
+{"background": 2.0, "threshold": 131.5, "banded": 106.7, "saving_pct": 18.9}
+{"background": 3.0, "threshold": 134.1, "banded": 115.4, "saving_pct": 13.9}
