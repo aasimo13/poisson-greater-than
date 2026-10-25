@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-25",
+  "base_commit": "08b0ef546e9492177b93a61b0ff2b09539a4be1d",
+  "original_quick_checks": {
+    "passed": 33,
+    "failed": 0,
+    "scope": "Quick suite includes K=3 lower-bound recomputation. Long K=4 bound inspected, not rerun."
+  },
+  "extension_unit_tests": {
+    "passed": 28,
+    "failed": 0
+  },
+  "extension_reproduction_command": "bash reproduce.sh extensions",
+  "extension_reproduction_exit_code": 0,
+  "serialized_adaptive_policies_independently_replayed": 13,
+  "maximum_replayed_adaptive_error": 0.009999000427111831,
+  "maximum_conservative_tail_charge": 2.412514632510465e-13,
+  "all_reported_fixed_errors_below_limit": true,
+  "local_document_links_resolve": true,
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "artifact_sha256": {
+    "README.md": "ce9ce341b7f1f59dd68950eab4e0f2db3cb4b8d05c25a65f67ee5eb00dc1b83e",
+    "docs/feedback_methods.md": "0286da95150d15e8088a0ba39c5e28c6796a47cadae77a288f947a13f5715d38",
+    "docs/related_work.md": "66d2024fa4c663999e6d77b10740243096023f86bb8425fa38dc3a1bd131bbfe",
+    "docs/research_note.md": "07984e1122ef53a8ad98b629c7138c06cf2f399217d009488da9b7c23a93be34",
+    "docs/resource_methods.md": "6c8abb7911a4fabd226701aaefe859edc73f674e20e3bbc59c40741640ed35eb",
+    "docs/theory.md": "e5d89bc27936c1df41d3ea9876a559127a7abf56552bb703e223bedc90452c6e",
+    "figures/fig_ladder.png": "2a54b2e275ad1f07fa726e896a0449417c8b279cb44da78e177d9177a2906131",
+    "figures/fig_ladder.svg": "3da72d3bebe6c5726c3c376f269233022907eeb12dda24ff4ba30b072f05db3b",
+    "figures/fig_resources.png": "74a30b8aad0b13dc3cbc0b3b69ecbd4a49a112e96340c24ba7b81132b4f7f47a",
+    "figures/fig_resources.svg": "18387d5406cbcc3d7bfec5d40001b65dcf12d59dee25b7637bb4271ab8b1e9e1",
+    "reproduce.sh": "351436c0b2cb62a75c3e0d0c0133a1889bb96e0281414202fad157947b775a48",
+    "results/feedback_sequence.json": "99750c3bb7d7387e8ed3392e93828c4ec27112c858673498521c3508cdbbac85",
+    "results/ladder.json": "99b34397821d427ff347a195543aed8757b060db51298a48637113d9f604fb3c",
+    "results/resource_benchmark.json": "e8b5536ff2de2d28139e7e4c688b52296d41b3be4afccdc59391e70bc4b842b0",
+    "results/timecomp.json": "565866c8e8f6dfb76d560c46d38a7e5b5f55d0880cd7149ba16b29124e241370",
+    "src/background_k3.py": "3497bba43dd688c41a72b71935ba4a91507ee6c5430618f0500dfe76c9a269f4",
+    "src/feedback_sequence.py": "815698bb83f91d92248ec25002a1091f8b062462f0c4053913540ccf3000d0cc",
+    "src/figure_ladder.py": "7b632aded0c76a457c0d87b855e876e7b3f3e1ae2c6963c0b3a2c96dd6ce6f0f",
+    "src/figure_resources.py": "630d1a4740d5920176b8235406e9bdb5f1b33a91033b69362dbca55042cc12c3",
+    "src/gaussian_theorem.py": "47523a616b8fb0003a618a58239103e66cc826c8e6eb92ff506b05e18e81266d",
+    "src/ladder_points.py": "b6b17585c648e9d6580aae227f92e5fe19b767ead9b2115bbff02993f1a5d9a7",
+    "src/resource_benchmark.py": "6a837aadb829cf55501d6a426c0aa92efe178381bc217cd02174e0dac235d08c",
+    "src/threshold_family.py": "e06bb128d8f1ce40d799a42b836cb3590cadd4e036479825387b79562a9887a5",
+    "src/threshold_optimum.py": "7404a4309e24125df8f87a4044a71cd9619a50afc9495b4e5653403a1479565b",
+    "src/timecomp.py": "6baf4f635433b836463bdf4de3977748bb5d9c6a1fdf2071ec319e01cdc41820",
+    "src/verify_candidate.py": "a19e5f478c211c15c6b1c692023a22ed6a8305797fc01289c0e898a30342e422",
+    "tests/test_feedback_sequence.py": "f6ec4f14d7205c9693747fdd7bde8ad949d9f968ed3293514dee117c8397fadf",
+    "tests/test_gaussian_theorem.py": "ae0cb5eccd57a3f08b944c663ff4ddcb8e20ef01be4a2f2b0d1e13a348717841",
+    "tests/test_resource_benchmark.py": "a11e1b638752ed69e00d3acb631a433e077ca0835502d2a1fbed5a00e09c60aa",
+    "tests/test_threshold_certificate.py": "0fb301354e055667378cd0ac480e2e8241c19d9f3605f68fed0f321d8e060813"
+  },
+  "integrated_upstream_commit": "73fa2ef39adbd7c3601d54fbfda46b9cc8a89cc4",
+  "integrated_quick_checks": {
+    "passed": 39,
+    "failed": 0,
+    "runtime_seconds": 164,
+    "scope": "Includes cost-ladder and threshold-family upstream checks. Long K=4 bound still not rerun."
+  },
+  "maximum_conservative_tail_charge_scope": "Adaptive-policy overflow; arrival-count truncation is reported separately below.",
+  "arrival_policy_independent_audit": {
+    "unique_policies": 2,
+    "input_pairs_per_policy": 16,
+    "clock_rows": 8,
+    "method": "Scalar Poisson PMF recurrence and independently reconstructed support, without importing optimizer/verifier functions.",
+    "maximum_actual_error": 0.00999795749545,
+    "maximum_conservative_error_bound": 0.00999797352238,
+    "maximum_omitted_mass_charge": 2.0116199e-06,
+    "maximum_replay_discrepancy": 1.36e-14,
+    "rate_caps_and_deadlines_verified": true
+  },
+  "resource_rerun_matches_except_solve_seconds": true,
+  "feedback_rerun_byte_identical": true,
+  "incorporated_upstream_commits": [
+    "094aa27478776028b4432dba115c0d11e26b7171",
+    "73fa2ef39adbd7c3601d54fbfda46b9cc8a89cc4"
+  ]
+}

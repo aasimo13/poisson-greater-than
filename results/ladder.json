@@ -187,8 +187,28 @@
   },
   "arrival_time": {
    "bg": 0.0,
-   "cost": 9.111450675264145,
-   "source": "results/timecomp.json bound (loose)"
+   "cost": 7.824046010856292,
+   "formula": "2 * log(1 / (2 * error_target))",
+   "status": "analytic necessary bound for one-hot arrival slots, evaluated in floating point",
+   "source": "docs/theory.md; results/timecomp.json analytic_floor"
+  }
+ },
+ "background": "counts per counted channel or slot; 1 for threshold/banded, 2 for two_channel, 4 for arrival_time",
+ "resource_caveat": "Equal background values do not match total background, observation time, or readout resources.",
+ "uncertified_diagnostics": {
+  "arrival_time_pairwise_search": {
+   "value": 9.111450675264145,
+   "vars_A0_A1_B0_B1": [
+    0.0035965308638855726,
+    4.595168325109697,
+    4.516282350154448,
+    2.7563248270275813
+   ],
+   "value_kind": "local penalized objective",
+   "is_lower_bound": false,
+   "status": "uncertified local-search diagnostic",
+   "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2",
+   "limitation": "No global lower-bound certificate; the finite penalty also does not enforce feasibility."
   }
  }
 }

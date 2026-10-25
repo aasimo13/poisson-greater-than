@@ -1,8 +1,9 @@
-"""Background light for the K = 3 comparator, run as margin 2 on K = 4 (same problem,
-see threshold_family.py). Every window gets b extra counts on top of x[A]+y[B]; cost is
-the max signal mean (background not charged). Both the best single threshold design
-(any encoder, both directions, randomized cutoff) and the banded design (exact LP decoder)
-are re-optimized at each b by Nelder-Mead from four starting shapes. Search results, not proofs.
+"""Background light for the K = 3 comparator, run as the equivalent sum predicate A+B >= 2 on K = 4
+(equivalent to margin 2 after relabeling/output complementation; see threshold_family.py).
+Every window gets b extra counts on top of x[A]+y[B]; cost is the max signal mean
+(background not charged). Threshold shapes (both directions, cutoff randomization
+on a 51-point grid from 0 to 1) and banded shapes (numerical LP decoder) are searched
+at each b by Nelder-Mead from four starts. Search results, not proofs of optimality.
 
 usage: python3 src/background_k3.py 0,0.1,0.3,0.5,1,2,3   (about 10 minutes per value)
 """

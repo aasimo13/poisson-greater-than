@@ -9,7 +9,12 @@ counted as error, so every number is conservative).
 Modes (run from the repo root, writes/updates results/timecomp.json):
   python3 src/timecomp.py            verify the stored winner: LP error, cost, mpmath recheck
   python3 src/timecomp.py --beta     fixed shape rescale bisection at beta 0.1, 0.5, 1 (a few minutes to about 20)
-  python3 src/timecomp.py --bound    lower bound from three pairwise Neyman-Pearson constraints (about 1 minute)
+  python3 src/timecomp.py --bound    uncertified local search over three pairwise constraints (about 1 minute)
+
+The legacy --bound flag is retained for reproducibility. Its penalized Nelder-Mead objective is an exploratory
+diagnostic, not a lower bound: no global optimization certificate is provided, and a finite penalty does not
+enforce feasibility. A separate analytic lower bound for this one-hot arrival-slot model is
+2*log(1/(2*epsilon)) = 7.824046 at epsilon = 0.01; see docs/theory.md.
 """
 import sys, os, json, time
 import numpy as np
@@ -25,6 +30,36 @@ WIN_A = [4.535158813102838, 4.786907722848276, 4.830716518368628, 4.833524524491
 WIN_B = [16.04681139542948, 16.138659748846283, 16.136413046185083, 16.097174028760445]
 # bisection brackets (lo, hi) per beta for the shape rescale
 BRACKET = {0.1: (21.0, 40.0), 0.5: (25.0, 70.0), 1.0: (30.0, 90.0)}
+
+
+def analytic_arrival_floor(error_target=0.01):
+    """Metadata for the genie-aided, all-zero-overlap lower bound; no numerical optimization."""
+    error_target = float(error_target)
+    if not 0.0 < error_target < 0.5:
+        raise ValueError("error_target must lie strictly between 0 and 0.5")
+    return {
+        "value": float(2 * np.log(1 / (2 * error_target))),
+        "error_target": error_target,
+        "beta": 0.0,
+        "formula": "2 * log(1 / (2 * error_target))",
+        "is_lower_bound": True,
+        "status": "analytic necessary bound, evaluated in floating point",
+        "model": "one-hot arrival slots, K >= 2, independent Poisson counts, randomized receiver, peak signal cost max(muA) + max(muB)",
+        "source": "docs/theory.md: one-hot arrival-slot lower bound",
+    }
+
+
+def pairwise_search_metadata(value, variables):
+    """Label the historical local-search result without claiming a global lower bound."""
+    return {
+        "value": float(value),
+        "vars_A0_A1_B0_B1": list(variables),
+        "value_kind": "local penalized objective",
+        "is_lower_bound": False,
+        "status": "uncertified local-search diagnostic",
+        "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2",
+        "limitation": "No global lower-bound certificate; the finite penalty also does not enforce feasibility.",
+    }
 
 
 def lam_matrix(muA, muB, beta):
@@ -73,6 +108,11 @@ def save(key, val):
         d = json.load(open(OUT))
     except Exception:
         d = {}
+    # Migrate old snapshots whose local-search diagnostic was mislabeled as a bound.
+    if "bound" in d:
+        old = d.pop("bound")
+        d.setdefault("pairwise_search_diagnostic", pairwise_search_metadata(old["value"], old["vars_A0_A1_B0_B1"]))
+    d["analytic_floor"] = analytic_arrival_floor()
     d[key] = val
     os.makedirs(os.path.dirname(OUT) or ".", exist_ok=True)
     json.dump(d, open(OUT, "w"), indent=1)
@@ -127,7 +167,7 @@ def beta_run(betas):
 
 
 def np2(l0, l1):
-    """Exact minimax error between two 2 slot Poisson hypotheses (randomized Neyman-Pearson test)."""
+    """Numerical minimax error for two 2-slot Poisson hypotheses, with finite-support tail allowance."""
     M = int(poisson.isf(1e-13, max(max(l0), max(l1), 1e-9))) + 6
     n = np.arange(M + 1)
     p0 = np.outer(poisson.pmf(n, max(l0[0], 1e-300)), poisson.pmf(n, max(l0[1], 1e-300))).ravel()
@@ -145,7 +185,10 @@ def np2(l0, l1):
 
 
 def bound():
-    """Only slots 0,1 matter: variables A0,A1,B0,B1 against the three pairs (0,0), (0,1), (1,1) vs (1,0)."""
+    """Uncertified local penalty search for three necessary constraints; this does not compute a lower bound.
+
+    Only slots 0,1 matter: variables A0,A1,B0,B1 against (0,0), (0,1), (1,1) vs (1,0).
+    """
     def cons(v):
         A0, A1, B0, B1 = np.abs(v)
         return (np2([A0 + B0, 0.0], [B0, A1]),      # (0,0) FALSE vs (1,0) TRUE
@@ -163,9 +206,9 @@ def bound():
         print(s, round(r.fun, 4), np.round(np.abs(r.x), 4).tolist(), flush=True)
         if best is None or r.fun < best[0]:
             best = (r.fun, np.abs(r.x))
-    print(f"BOUND (3 pair constraints, 4 variables): {best[0]:.4f}  at A0,A1,B0,B1 = {np.round(best[1], 4).tolist()}")
-    save("bound", {"value": float(best[0]), "vars_A0_A1_B0_B1": best[1].tolist(),
-                   "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2; loose (not certified tight)"})
+    print(f"UNCERTIFIED LOCAL-SEARCH DIAGNOSTIC (not a lower bound): {best[0]:.4f}  at A0,A1,B0,B1 = {np.round(best[1], 4).tolist()}")
+    print(f"Analytic one-hot arrival-slot lower bound: {analytic_arrival_floor()['value']:.6f}")
+    save("pairwise_search_diagnostic", pairwise_search_metadata(best[0], best[1].tolist()))
 
 
 if __name__ == "__main__":

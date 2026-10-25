@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Reproduce the headline numbers.   ./reproduce.sh quick   (about 3 minutes)
 #                                   ./reproduce.sh full    (lists the long jobs; add --run to run them)
+#                                   ./reproduce.sh extensions (new proofs, resource/feedback studies)
 # Run from anywhere; everything is run from the repo root. Set NICE="" to drop the nice wrapper.
 set -u
 cd "$(dirname "$0")"
@@ -36,7 +37,7 @@ quick() {
   check "candidate max mean" "$(sed -n 's/^max mean = \([0-9.]*\)/\1/p' "$TMP/cand.txt")" 201 0.05
   check "LP decoder on same encoding, worst error %" \
     "$(sed -n 's/^LP (randomized).*error \([0-9.]*\)%.*/\1/p' "$TMP/cand.txt")" 0.9178 0.00005
-  check "budget after LP rescaling (exact value 196.70)" \
+  check "budget after LP rescaling (feasible rounded value 196.70)" \
     "$(sed -n 's/^Budget after rescaling.*: \([0-9.]*\) (scale.*/\1/p' "$TMP/cand.txt")" 196.70 0.015
 
   echo "== 2. threshold_optimum.py (K=4)"
@@ -119,6 +120,23 @@ quick() {
   [ "$FAIL" -eq 0 ]
 }
 
+extensions() {
+  local OUT=${OUT:-results/rerun/extensions}
+  mkdir -p "$OUT" || return $?
+  echo "== New analytic and stochastic-model tests"
+  $PY -m unittest discover -s tests -v || return $?
+  echo "== Gaussian theorem: all pairs, K=2..8"
+  $PY src/gaussian_theorem.py --max-k 8 > "$OUT/gaussian_theorem.json" || return $?
+  echo "== Matched-rate resource benchmark"
+  $PY src/resource_benchmark.py --out "$OUT/resource_benchmark.json" || return $?
+  echo "== Actual decoded-answer feedback"
+  $PY src/feedback_sequence.py --output "$OUT/feedback_sequence.json" || return $?
+  echo "== Resource figure"
+  MPLCONFIGDIR="${MPLCONFIGDIR:-$TMP/matplotlib}" $PY src/figure_resources.py \
+    --input "$OUT/resource_benchmark.json" --out-dir "$OUT/figures" || return $?
+  echo "Extension checks passed. Results: $OUT"
+}
+
 full() {
   local OUT=${OUT:-results/rerun}
   local run=0; [ "${1:-}" = "--run" ] && run=1
@@ -166,6 +184,7 @@ full() {
 
 case "${1:-}" in
   quick) quick ;;
+  extensions) extensions ;;
   full) shift; full "$@" ;;
-  *) echo "usage: $0 quick | full [--run]"; exit 2 ;;
+  *) echo "usage: $0 quick | extensions | full [--run]"; exit 2 ;;
 esac
