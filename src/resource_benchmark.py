@@ -9,6 +9,8 @@ assumed. This is an ideal gated-source model, not a detector implementation.
 
 Fixed threshold and peeled-band shapes are held fixed and their exposure and
 decoder are recalibrated. OOK uses four serial, separately resolved bit slots.
+The stored arrival-time pulse shape also uses four equal slots with a joint
+decoder; its slot duration follows its largest individual pulse and rate cap.
 The adaptive banded policy is optimized on a selected finite time/count grid.
 Its objective is uniform-input mean wall time; every input pair has its own
 error constraint. Independent per-hypothesis propagation verifies the policy.
@@ -17,9 +19,12 @@ Run: python3 src/resource_benchmark.py --out results/resource_benchmark.json
 Fast smoke run: python3 src/resource_benchmark.py --quick --out /tmp/resources.json
 """
 import argparse
+import base64
+import functools
 import json
 import platform
 import time
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -38,6 +43,13 @@ PAIRS = [(a, b) for a in range(K) for b in range(K)]
 TAIL = 1e-12
 TRANSITION_CUTOFF = 1e-14
 ERROR_BUFFER = 2e-6
+
+# Stored pulse shape from src/timecomp.py WIN_A/WIN_B, upstream094aa274.
+# Copying constants avoids importing its optional mpmath dependency or CLI code.
+ARRIVAL_WIN_A = np.array([4.535158813102838, 4.786907722848276,
+                         4.830716518368628, 4.833524524491183])
+ARRIVAL_WIN_B = np.array([16.04681139542948, 16.138659748846283,
+                         16.136413046185083, 16.097174028760445])
 
 
 def shape_rates(name, peak_rate=1.0):
@@ -180,6 +192,160 @@ def four_bit_ook(peak_rate=1.0, background_rate=0.0, epsilon=.01,
                symmetric_bit_error_target=float(bit_target),
                bit_decoder=decoder.tolist(),
                status="achievable four-slot design; equal-duration symmetric bit family fitted to all 16 comparator errors")
+    return out
+
+
+def arrival_slot_means(slot_duration, peak_rate=1.0, background_rate=0.0):
+    """Each sender emits once, in the slot indexed by its input.
+
+    Four equal slots share one detector. Every pulse spans its slot; the largest
+    source-B pulse saturates R and all other pulse rates preserve WIN_A/WIN_B.
+    Consequently the slot is limited by max(WIN_B), not by total photons / 4.
+    """
+    maximum = max(ARRIVAL_WIN_A.max(), ARRIVAL_WIN_B.max())
+    x, y = peak_rate * ARRIVAL_WIN_A / maximum, peak_rate * ARRIVAL_WIN_B / maximum
+    L = np.full((16, 4), background_rate * slot_duration)
+    for i, (a, b) in enumerate(PAIRS):
+        L[i, a] += x[a] * slot_duration
+        L[i, b] += y[b] * slot_duration
+    return L, x, y
+
+
+def joint_count_support(L, threshold=1e-9):
+    """Retain count vectors using a prefix probability envelope over hypotheses.
+
+    Removing a prefix with maximum probability below threshold is conservative:
+    multiplying by more marginal probabilities cannot make a descendant exceed
+    threshold. All omitted probability is charged as error by the LP/verifier.
+    Chunks bound peak memory rather than forming the full four-dimensional cube.
+    """
+    L = np.asarray(L, float)
+    if L.shape != (16, 4) or np.any(L < 0) or threshold <= 0:
+        raise ValueError("expected 16 nonnegative four-slot mean vectors")
+    counts, probability = np.zeros((1, 0), np.int32), np.ones((1, 16))
+    for slot in range(4):
+        nmax = int(poisson.isf(1e-13, max(float(L[:, slot].max()), 1e-9))) + 3
+        marginal = poisson.pmf(np.arange(nmax + 1)[None, :], L[:, slot, None])
+        count_blocks, probability_blocks = [], []
+        for begin in range(0, len(counts), 2048):
+            end = min(begin + 2048, len(counts))
+            expanded = probability[begin:end, None, :] * marginal.T[None, :, :]
+            i, n = np.nonzero(expanded.max(axis=2) >= threshold)
+            count_blocks.append(np.hstack([counts[begin + i], n[:, None].astype(np.int32)]))
+            probability_blocks.append(expanded[i, n])
+        counts = np.concatenate(count_blocks)
+        probability = np.concatenate(probability_blocks)
+    return counts, probability
+
+
+def joint_count_lp(L, support_threshold=1e-9):
+    """Minimax joint decoder, with every omitted count vector counted as error."""
+    counts, P = joint_count_support(L, support_threshold)
+    mass = P.sum(axis=0)
+    tail = np.maximum(0.0, 1.0 - mass)
+    A = np.zeros((16, len(counts) + 1))
+    A[:, -1] = -1
+    rhs = -tail.copy()
+    for i in range(16):
+        if LAB[i]:
+            A[i, :-1] = -P[:, i]
+            rhs[i] = -(mass[i] + tail[i])
+        else:
+            A[i, :-1] = P[:, i]
+    objective = np.zeros(len(counts) + 1)
+    objective[-1] = 1
+    result = linprog(objective, A_ub=A, b_ub=rhs,
+                     bounds=[(0, 1)] * len(counts) + [(0, None)], method="highs",
+                     options={"primal_feasibility_tolerance": 1e-9,
+                              "dual_feasibility_tolerance": 1e-9})
+    if not result.success:
+        raise RuntimeError("joint count LP: " + result.message)
+    decoder = np.clip(result.x[:-1], 0, 1)
+    retained_error = np.where(LAB, P.T @ (1 - decoder), P.T @ decoder)
+    return {"error": float(np.max(retained_error + tail)), "counts": counts,
+            "decoder": decoder, "tail": tail, "lp_objective": float(result.fun)}
+
+
+def verify_joint_count_decoder(L, counts, decoder):
+    """Recompute probabilities directly in log space, separately from support growth.
+
+    The implemented default outside retained support is FALSE. The reported
+    bound conservatively treats every omitted event as an error under either
+    label. Thus it bounds an executable joint count decoder without assuming
+    a favorable classification in the truncated tail.
+    """
+    L, counts, decoder = np.asarray(L), np.asarray(counts), np.asarray(decoder)
+    errors, omitted = [], []
+    for i in range(16):
+        p = np.exp(poisson.logpmf(counts, L[i][None, :]).sum(axis=1))
+        tail = max(0.0, 1.0 - p.sum())
+        retained_error = np.dot(p, 1 - decoder if LAB[i] else decoder)
+        errors.append(float(retained_error + tail))
+        omitted.append(float(tail))
+    return np.array(errors), np.array(omitted)
+
+
+@functools.lru_cache(maxsize=8)
+def _arrival_solution(background_ratio, epsilon):
+    """Fit the dimensionless slot R*t once per background/error setting."""
+    target = epsilon - ERROR_BUFFER
+    maximum = max(ARRIVAL_WIN_A.max(), ARRIVAL_WIN_B.max())
+    lo, hi = 0.0, float(maximum)
+    fitted = joint_count_lp(arrival_slot_means(hi, 1.0, background_ratio)[0])
+    while fitted["error"] > target:
+        lo, hi = hi, hi * 1.5
+        if hi > 1000:
+            raise RuntimeError("arrival shape required excessive slot duration")
+        fitted = joint_count_lp(arrival_slot_means(hi, 1.0, background_ratio)[0])
+    # Support truncation can perturb monotonicity very slightly. The final
+    # independent upper-bound check, not bisection alone, establishes feasibility.
+    while hi - lo > 3e-5 * hi:
+        mid = (lo + hi) / 2
+        candidate = joint_count_lp(arrival_slot_means(mid, 1.0, background_ratio)[0])
+        if candidate["error"] <= target:
+            hi, fitted = mid, candidate
+        else:
+            lo = mid
+    L, _, _ = arrival_slot_means(hi, 1.0, background_ratio)
+    errors, tail = verify_joint_count_decoder(L, fitted["counts"], fitted["decoder"])
+    if errors.max() > epsilon:
+        raise RuntimeError("independent arrival decoder verification failed")
+    # Export only positive decisions. All absent vectors return FALSE. Compressed
+    # JSON preserves full precision while avoiding megabytes of zero entries.
+    positive = fitted["decoder"] > 0
+    sparse = {"counts": fitted["counts"][positive].tolist(),
+              "probability_true": fitted["decoder"][positive].tolist()}
+    payload = base64.b64encode(zlib.compress(json.dumps(sparse, separators=(",", ":")).encode(), 9)).decode()
+    return {"scaled_slot": hi, "errors": errors.tolist(), "tail": tail.tolist(),
+            "support_size": len(fitted["counts"]), "lp_objective": fitted["lp_objective"],
+            "joint_decoder": {"encoding": "base64(zlib(JSON))", "payload": payload,
+                              "default_answer": False, "fields": ["counts", "probability_true"]}}
+
+
+def arrival_time_slots(peak_rate=1.0, background_rate=0.0, epsilon=.01,
+                       readout_time=0.0, wall_deadline=200.0):
+    """Matched-rate control using the upstream arrival-time winner's fixed shape.
+
+    The four slot counts are decoded jointly. Rates, background rate, readout
+    pauses and wall deadline match the other resource-benchmark designs.
+    """
+    if peak_rate <= 0 or background_rate < 0 or readout_time < 0:
+        raise ValueError("invalid physical parameters")
+    solution = _arrival_solution(float(background_rate / peak_rate), float(epsilon))
+    slot = solution["scaled_slot"] / peak_rate
+    L, x, y = arrival_slot_means(slot, peak_rate, background_rate)
+    active = 4 * slot
+    signal = np.array([x[a] + y[b] for a, b in PAIRS]) * slot
+    out = _metrics("four_arrival_time_slots", solution["errors"], np.full(16, active),
+                   np.full(16, 4), signal, np.full(16, background_rate * active),
+                   active, 4, readout_time, wall_deadline)
+    out.update(slot_duration=float(slot), x_pulse_rates=x.tolist(), y_pulse_rates=y.tolist(),
+               pulse_means_a=(x * slot).tolist(), pulse_means_b=(y * slot).tolist(),
+               slot_means_by_pair=L.tolist(),
+               tail_error_charged_by_pair=solution["tail"], support_size=solution["support_size"],
+               support_probability_threshold=1e-9, joint_decoder=solution["joint_decoder"],
+               source="src/timecomp.py WIN_A/WIN_B from upstream094aa274; fixed shape, exposure and joint decoder refitted",
+               status="achievable four-slot joint-decoder design with conservative tail; fixed pulse shape, not globally optimal")
     return out
 
 
@@ -369,9 +535,11 @@ def benchmark(quick=False):
         shape_names = ["threshold", "banded"] + (["banded_bg1"] if bg > 0 else [])
         fixed_base = [fixed_shared(s, peak, bg, epsilon, 0, deadline) for s in shape_names]
         ook_base = four_bit_ook(peak, bg, epsilon, 0, deadline)
+        print(f"background={bg:g}, fitting matched-rate arrival-time control", flush=True)
+        arrival_base = arrival_time_slots(peak, bg, epsilon, 0, deadline)
         for overhead in overheads:
             fixed = []
-            for base in fixed_base + [ook_base]:
+            for base in fixed_base + [ook_base, arrival_base]:
                 copy = dict(base)
                 active, reads = np.array(base["expected_active_time_by_pair"]), np.array(base["expected_readouts_by_pair"])
                 wall = active + overhead * reads
@@ -396,11 +564,13 @@ def benchmark(quick=False):
                         "fastest_tested_feasible": None if best is None else {
                             "name": best["name"], "steps": best.get("steps"),
                             "uniform_mean_wall_time": best["uniform_mean_wall_time"]},
-                        "ook_readout_energy_break_even_vs_fixed_band": readout_energy_break_even(fixed[-1], fixed[1])}
+                        "ook_readout_energy_break_even_vs_fixed_band": readout_energy_break_even(ook_base, fixed_base[1]),
+                        "arrival_readout_energy_break_even_vs_fixed_band": readout_energy_break_even(arrival_base, fixed_base[1])}
             scenarios.append(scenario)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "base_commit": "08b0ef546e9492177b93a61b0ff2b09539a4be1d",
+        "additional_arrival_shape_source": "upstream094aa274 src/timecomp.py WIN_A/WIN_B",
         "runtime": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__},
         "assumptions": [
             "Independent, constant-rate Poisson arrivals during active observation; perfect counter and fully off sources.",
@@ -411,6 +581,7 @@ def benchmark(quick=False):
             "Adaptive grids and encoder shapes are a limited menu; the fastest tested scheme is not a global architecture optimum.",
             "Background scenarios include the previously searched bg=1 shape from results/bgdrift.jsonl first record, normalized to the rate cap and refitted; it is not globally optimized for this rate model.",
             "Four OOK slots run serially with one counter; equal-duration symmetric bit decoders are fitted to all 16 comparison-error constraints.",
+            "The arrival-time control preserves the upstream WIN_A/WIN_B pulse shape in four equal slots; slot duration is set by the largest individual pulse at rate R, with a joint decoder and conservative omitted-support error.",
             "Readout latency includes gating/reset/decision delays; electrical energy remains parameterized, not measured.",
             "Numerical truncation loss is charged as error in independent propagation; LP tolerances prevent exact-rational certification."
         ],

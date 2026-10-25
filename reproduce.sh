@@ -95,6 +95,23 @@ quick() {
   check "molecules: banded, 1% spillover, previous answer known" "$(mcv 'one type, banded, 1% spillover, previous answer known')" 319.33 0.2
   check "molecules: banded, 1% spillover, previous pair known" "$(mcv 'one type, banded, 1% spillover, previous pair known')" 287.38 0.2
 
+  echo "== 9. twotype_bound.py, price_curve.py, argmax_joint.py (two type bound, price curve, joint argmax)"
+  $PY src/twotype_bound.py > "$TMP/tt.txt" 2>&1; grep -v '^  [0-3] [0-3]' "$TMP/tt.txt" | show
+  check "two type certified lower bound (randomized NP chain)" \
+    "$(sed -n 's/^found design cost.*LB \([0-9.]*\) gap.*/\1/p' "$TMP/tt.txt")" 92.29 0.005
+  PRICE_OUT="$TMP/pc.json" $PY src/price_curve.py > "$TMP/pc.txt" 2>&1; cut -c1-150 "$TMP/pc.txt" | show
+  check "price curve, two types counted separately, eps 0.01" \
+    "$(python3 -c 'import json,sys; print(round(json.load(open(sys.argv[1]))["0.01"]["twochan"],2))' "$TMP/pc.json" 2>/dev/null)" 106.4 0.05
+  ARGMAX_OUT="$TMP/am.json" $PY src/argmax_joint.py > "$TMP/am.txt" 2>&1; show < "$TMP/am.txt"
+  check "joint argmax K=3 cost (one counter, three transmitters)" "$(sed -n 's/^cost \([0-9.]*\)$/\1/p' "$TMP/am.txt")" 1768.1 0.05
+  TIMECOMP_OUT="$TMP/tc.json" $PY src/timecomp.py > "$TMP/tc.txt" 2>&1; show < "$TMP/tc.txt"
+  check "arrival time comparator cost (4 slots, beta 0)" "$(sed -n 's/^cost \([0-9.]*\) .*/\1/p' "$TMP/tc.txt")" 20.97 0.005
+  echo "== 10. threshold_family.py (sum thresholds are smaller comparisons)"
+  $PY src/threshold_family.py > "$TMP/tf.txt" 2>&1; show < "$TMP/tf.txt"
+  check "threshold equivalences hold, K = 2..8" "$(grep -c '^Equivalences hold' "$TMP/tf.txt")" 1 0
+  check "margin 2 (K=4) deterministic design, worst error %" \
+    "$(sed -n 's/.*worst error = \([0-9.]*\)%.*/\1/p' "$TMP/tf.txt")" 0.99995769 0.0000001
+
   echo
   echo "============ SUMMARY ============"
   printf '%-60s %-14s %-14s %s\n' check got expected status

@@ -22,6 +22,7 @@ def draw(data, out_dir):
         "fixed_banded": ("Nominal banded, one count", "#2563eb", "o"),
         "fixed_banded_bg1": ("Retuned banded, one count", "#7c3aed", "D"),
         "four_serial_bit_slots": ("Four bit slots", "#059669", "^"),
+        "four_arrival_time_slots": ("Arrival-time pulses, four slots", "#0891b2", "v"),
     }
     with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 10,
                          "axes.spines.top": False, "axes.spines.right": False,
@@ -77,7 +78,7 @@ def draw(data, out_dir):
         fig.text(.08, .922, "Same source peak rate, 1% error limit for every input pair, and a common deadline of 200 units.",
                  fontsize=10, color="#475569")
         fig.legend(legend_items.values(), legend_items.keys(), loc="lower center",
-                   bbox_to_anchor=(.5, .035), ncol=3, frameon=False, fontsize=9)
+                   bbox_to_anchor=(.5, .035), ncol=3, frameon=False, fontsize=8.8)
         fig.text(.08, .012, "Filled markers meet the deadline; open markers miss it. Mean time uses uniform inputs. Lines connect tested settings.",
                  fontsize=8, color="#64748b")
         fig.subplots_adjust(left=.08, right=.98, top=.85, bottom=.23, wspace=.12)
@@ -85,6 +86,8 @@ def draw(data, out_dir):
         for ext in ("png", "svg"):
             target = out_dir / ("fig_resources." + ext)
             fig.savefig(target, dpi=220, facecolor="white")
+            if ext == "svg":
+                target.write_text("\n".join(line.rstrip() for line in target.read_text().splitlines()) + "\n")
             print(target)
         plt.close(fig)
 

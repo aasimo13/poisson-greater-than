@@ -1,0 +1,50 @@
+{
+ "winner": {
+  "muA": [
+   4.535158813102838,
+   4.786907722848276,
+   4.830716518368628,
+   4.833524524491183
+  ],
+  "muB": [
+   16.04681139542948,
+   16.138659748846283,
+   16.136413046185083,
+   16.097174028760445
+  ],
+  "cost": 20.972184273337465,
+  "lp_error": 0.009992774555335027,
+  "mpmath_error": 0.00999277388345361,
+  "beta": 0.0,
+  "source": "Nelder-Mead on shape, LP decoder, support threshold 1e-9"
+ },
+ "beta_costs": {
+  "0.1": 28.982753492378876,
+  "0.5": 38.29053029358241,
+  "1.0": 44.90701781938264
+ },
+ "pairwise_search_diagnostic": {
+  "value": 9.111450675264145,
+  "vars_A0_A1_B0_B1": [
+   0.0035965308638855726,
+   4.595168325109697,
+   4.516282350154448,
+   2.7563248270275813
+  ],
+  "value_kind": "local penalized objective",
+  "is_lower_bound": false,
+  "status": "uncertified local-search diagnostic",
+  "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2",
+  "limitation": "No global lower-bound certificate; the finite penalty also does not enforce feasibility."
+ },
+ "analytic_floor": {
+  "value": 7.824046010856292,
+  "error_target": 0.01,
+  "beta": 0.0,
+  "formula": "2 * log(1 / (2 * error_target))",
+  "is_lower_bound": true,
+  "status": "analytic necessary bound, evaluated in floating point",
+  "model": "one-hot arrival slots, K >= 2, independent Poisson counts, randomized receiver, peak signal cost max(muA) + max(muB)",
+  "source": "docs/theory.md: one-hot arrival-slot lower bound"
+ }
+}

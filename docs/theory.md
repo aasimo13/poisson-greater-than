@@ -253,6 +253,79 @@ because it uses four separately resolved observations. Actual latency
 requires a rate and overhead model; four slots need not have the same
 duration as one high-count window.
 
+## 6. Two separately counted channels
+
+Suppose the receiver observes independent `N_A ~ Poisson(x_A)` and
+`N_B ~ Poisson(y_B)`. Fix any two distinct A values `a<a'` and set `B=a`.
+The answer changes between `(a,a)` and `(a',a)`, while the distribution of
+`N_B` stays the same. Averaging the receiver's rule over that unchanged
+distribution supplies a randomized test of `Poisson(x_a)` against
+`Poisson(x_a')` with both conditional errors at most `epsilon`. The same
+argument applies to every pair of B levels by fixing `A=b'` for `b<b'`.
+
+Sort either source's brightness levels as `z_0<...<z_(K-1)`. With the
+two-point function `h` defined above, adjacent sorted levels must satisfy
+`z_(j+1) >= h(z_j)`. The function `h` is nondecreasing: adding an independent
+Poisson background to both hypotheses cannot make their testing problem
+easier. More explicitly, subtracting a common nonnegative mean from a
+feasible pair gives a more informative observation, so increasing the
+smaller mean cannot decrease its required larger mean. Starting at zero
+and defining `L_0=0`, `L_(j+1)=h(L_j)` therefore gives
+
+\[
+\max x+\max y\ge 2L_{K-1}.
+\]
+
+At zero smaller mean the optimal test can randomize on a zero count, giving
+`h(0)=log((1-epsilon)/epsilon)`. For `K=4` and `epsilon=0.01`, the numerical
+chain is approximately `0, 4.5951, 19.94, 46.1466`, yielding about `92.2931`.
+This is an analytic necessary condition with numerical scalar evaluations.
+It need not be attainable because all pairwise tests must be compatible
+with one comparison decoder. The stored `106.366` design is about 15.25%
+above this lower bound.
+
+## 7. A valid lower bound for one-hot arrival-time pulses
+
+In the arrival-time model, input value `a` selects slot `a`, and source A
+emits a Poisson pulse of mean `mu_A[a]` only in that slot. Source B acts
+similarly. Pulse means are nonnegative, the receiver resolves the slots,
+and `P=max(mu_A)+max(mu_B)`. The following bound is specific to this
+one-hot pulse model; it is not a claim about every time-encoding protocol.
+
+**Proposition.** For `K>=2` and `0<epsilon<1/2`, per-pair comparison error
+at most `epsilon` requires
+
+\[
+\boxed{P\ge 2\log\frac{1}{2\epsilon}.}
+\]
+
+**Proof.** Choose `a<a'` and fix `B=a`, producing opposite comparison
+answers. Give the receiver B's entire count contribution so it can subtract
+it. This makes the testing task easier. The remaining A observations have
+nonzero counts in distinct slots, so those nonzero events identify the
+hypothesis. Their only shared event is an all-zero observation, with
+probabilities `exp(-mu_A[a])` and `exp(-mu_A[a'])`.
+
+Randomizing optimally on that event gives two-point minimax error
+
+\[
+\frac{1}{e^{\mu_A[a]}+e^{\mu_A[a']}}
+\ge\frac12e^{-M_A},\qquad M_A=\max_a\mu_A[a].
+\]
+
+Even the easier genie-aided task must have error at most `epsilon` if the
+original comparison does. Hence `M_A>=log(1/(2*epsilon))`. Fixing A and
+varying B across an opposite-answer pair gives the same bound for `M_B`.
+Adding them proves the proposition. QED.
+
+At 1% error this lower bound is `7.824046010856...` expected signal photons.
+It is loose relative to the stored approximately `20.9722` construction.
+The earlier `9.11145` value from `timecomp.py --bound` comes from finite
+multistart Nelder-Mead minimization of a penalized necessary-condition
+relaxation. That local search supplies no global lower-bound certificate.
+The value is preserved as an explicitly uncertified search diagnostic and
+is not used to claim an optimality gap.
+
 ## Reproduce the analytic control
 
 ```bash

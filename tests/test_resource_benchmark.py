@@ -1,6 +1,10 @@
 """Meaningful checks of the resource accounting and conditional guarantees."""
 import sys
+import ast
+import base64
+import json
 import unittest
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -9,7 +13,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from core import labels, lp_minimax, pmf_matrix
 from resource_benchmark import (adaptive_banded, fixed_shared, four_bit_ook,
                                 mean_energy, propagate_policy,
-                                readout_energy_break_even, shape_rates)
+                                readout_energy_break_even, shape_rates,
+                                arrival_time_slots, arrival_slot_means,
+                                ARRIVAL_WIN_A, ARRIVAL_WIN_B,
+                                joint_count_lp, verify_joint_count_decoder)
 
 
 class ResourceBenchmarkTests(unittest.TestCase):
@@ -17,6 +24,7 @@ class ResourceBenchmarkTests(unittest.TestCase):
     def setUpClass(cls):
         cls.band = fixed_shared("banded")
         cls.ook = four_bit_ook()
+        cls.arrival = arrival_time_slots()
 
     def test_known_photon_budget_and_source_rate_cap(self):
         self.assertAlmostEqual(self.band["max_expected_signal_photons"], 196.62, delta=.03)
@@ -90,6 +98,53 @@ class ResourceBenchmarkTests(unittest.TestCase):
         readout = bound["photon_coefficient"] * c + bound["active_time_coefficient"] * power
         self.assertAlmostEqual(mean_energy(self.ook, c, power, readout),
                                mean_energy(self.band, c, power, readout), places=8)
+
+    def test_arrival_uses_upstream_shape_without_import_side_effects(self):
+        tree = ast.parse((Path(__file__).resolve().parents[1] / "src" / "timecomp.py").read_text())
+        stored = {}
+        for statement in tree.body:
+            if isinstance(statement, ast.Assign):
+                for target in statement.targets:
+                    if isinstance(target, ast.Name) and target.id in ("WIN_A", "WIN_B"):
+                        stored[target.id] = ast.literal_eval(statement.value)
+        np.testing.assert_array_equal(ARRIVAL_WIN_A, stored["WIN_A"])
+        np.testing.assert_array_equal(ARRIVAL_WIN_B, stored["WIN_B"])
+
+    def test_arrival_photons_and_peak_rate_duration_are_distinct(self):
+        a = self.arrival
+        self.assertAlmostEqual(a["max_expected_signal_photons"], 20.972, delta=.02)
+        self.assertAlmostEqual(a["active_time_deadline"], 4 * a["slot_duration"])
+        self.assertGreater(a["active_time_deadline"], 60)
+        self.assertGreater(a["active_time_deadline"], self.ook["active_time_deadline"])
+        self.assertLess(a["max_expected_signal_photons"], self.ook["max_expected_signal_photons"])
+        self.assertLessEqual(max(a["x_pulse_rates"] + a["y_pulse_rates"]), 1.0 + 1e-12)
+        self.assertLessEqual(max(a["error_by_pair"]), .01)
+        self.assertEqual(a["max_readouts"], 4)
+
+    def test_arrival_exported_joint_decoder_and_tail_recheck(self):
+        a = self.arrival
+        payload = json.loads(zlib.decompress(base64.b64decode(a["joint_decoder"]["payload"])))
+        counts, d = np.array(payload["counts"]), np.array(payload["probability_true"])
+        # The sparse export omits zero-decision vectors too. Compute the exact
+        # FALSE-default error directly, without conservatively treating those
+        # deliberately omitted zero-decision states as errors.
+        from scipy.stats import poisson
+        for i, means in enumerate(a["slot_means_by_pair"]):
+            p_true = np.exp(poisson.logpmf(counts, means).sum(1)) @ d
+            actual_error = 1 - p_true if labels(4)[i] else p_true
+            self.assertLessEqual(actual_error, a["error_by_pair"][i] + 2e-10)
+        ambiguous = joint_count_lp(np.zeros((16, 4)))
+        errors, _ = verify_joint_count_decoder(np.zeros((16, 4)), ambiguous["counts"], ambiguous["decoder"])
+        np.testing.assert_allclose(errors, .5, atol=1e-10)
+
+    def test_arrival_rate_scaling_and_wall_deadline(self):
+        a = self.arrival
+        scaled = arrival_time_slots(peak_rate=2, readout_time=25, wall_deadline=100)
+        self.assertAlmostEqual(scaled["active_time_deadline"], a["active_time_deadline"] / 2)
+        np.testing.assert_allclose(scaled["expected_signal_photons_by_pair"], a["expected_signal_photons_by_pair"])
+        self.assertFalse(scaled["meets_wall_deadline"])
+        L, x, y = arrival_slot_means(10, 2, .02)
+        np.testing.assert_allclose(L.sum(1), [10*(x[aa]+y[bb])+4*.02*10 for aa in range(4) for bb in range(4)])
 
 
 if __name__ == "__main__":

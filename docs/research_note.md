@@ -2,6 +2,11 @@
 
 Research continuation, 25 October 2026. Original repository snapshot:
 `08b0ef546e9492177b93a61b0ff2b09539a4be1d`.
+This continuation also incorporates the concurrently published cost-ladder
+commit `094aa27478776028b4432dba115c0d11e26b7171`, preserving its arrival-time,
+two-channel, sorting and argmax experiments with the qualifications below.
+The final integration also includes threshold-family/background commit
+`73fa2ef39adbd7c3601d54fbfda46b9cc8a89cc4`.
 
 ## Main finding
 
@@ -75,12 +80,12 @@ conversion, not a claim about a particular detector.
 
 ### No-background timing results
 
-| Readout pause R*tau | Fixed threshold | Fixed banded | Four bit slots | Best tested adaptive banded |
-| --- | ---: | ---: | ---: | ---: |
-| 0 | 160.780 | 98.314 | **22.776** | 44.504, up to 8 reads |
-| 10 | 170.780 | 108.314 | **62.776** | 65.429, up to 4 reads |
-| 25 | 185.780 | 123.314 | 122.776 | **105.975**, up to 2 reads |
-| 50 | misses deadline | 148.314 | misses deadline | **124.853**, up to 2 reads |
+| Readout pause R*tau | Fixed threshold | Fixed banded | Four bit slots | Four arrival slots | Best tested adaptive banded |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 0 | 160.780 | 98.314 | **22.776** | 64.547 | 44.504, up to 8 reads |
+| 10 | 170.780 | 108.314 | **62.776** | 104.547 | 65.429, up to 4 reads |
+| 25 | 185.780 | 123.314 | 122.776 | 164.547 | **105.975**, up to 2 reads |
+| 50 | misses deadline | 148.314 | misses deadline | misses deadline | **124.853**, up to 2 reads |
 
 Entries are uniform-input mean wall times multiplied by R. The maximum wall
 time for an adaptive policy can reach 200, whereas the fixed banded scheme
@@ -137,6 +142,7 @@ background-aware shape restores feasibility when refitted to this rate model:
 | Original peeled band | 279.430 | 558.861 |
 | Stored background-retuned band | **161.818** | **323.603** |
 | Four bit slots | **31.187** | **31.187** |
+| Four arrival-time slots | 103.513 | 33.629 |
 
 The retuned candidate is taken from the original stored background experiment;
 it has not been globally optimized for this new model. Including it prevents
@@ -217,6 +223,79 @@ molecular-computing paper. The broad task-oriented communication principle is
 established. The originality of this precise Poisson construction and bound
 remains an open literature question.
 
+## 6. Integrating the new cost ladder
+
+The newer main-branch commit adds a four-slot arrival-time construction with
+approximately 20.9722 peak expected signal photons. It places one pulse from
+each source into the slot corresponding to its input value. Different source
+pulse energies allow the receiver to distinguish which source occupied which
+slot. This uses a different observation resource from one summed count, and
+also differs from the four binary on/off slots in the resource study.
+
+The original arrival-time pulse means peak at approximately 4.8335 for A and
+16.1387 for B. At a common source-rate limit R, four equal slots therefore
+need about `4*16.1387/R = 64.5546/R` active time before readout pauses, at
+the original stored scale. The approximately 20.97-photon budget is not its
+duration multiplied by R. The resource study refits this stored shape under
+the same rate-based background, per-pair error and deadline rules as the
+other designs.
+
+After refitting, zero-background arrival time uses 20.969624 peak expected
+signal photons and 64.546759 active-time units multiplied by R, at maximum
+checked error 0.99979735%. Its peak signal budget is about 7.93% below the
+four-bit design's 22.775646, while its equal-slot duration is longer. Uniform
+mean signal counts are 20.848796 for arrival time and 11.387823 for four bits;
+the ranking depends on whether the photon objective is peak or mean.
+At `b/R=0.01`, the arrival shape requires 33.628905 peak signal photons and
+103.513387 active-time units, against 31.1869 for both quantities in the
+four-bit design. The mean-time winner regimes in the table above are unchanged.
+
+The two serialized joint arrival decoders include all positive decision
+probabilities and an explicit FALSE default for other count vectors. Their
+conservative omitted-mass charges are below `2.1e-6`; these are distinct from
+the smaller adaptive-policy overflow probabilities reported above.
+
+The audit also changes three interpretations of the new experiments:
+
+- **Arrival-time lower bound.** The reported 9.11145 comes from local
+  Nelder-Mead minimization of a penalized relaxation. It has no global
+  lower-bound certificate, even though the constraints being relaxed are
+  necessary. It is preserved as a diagnostic. A valid analytic lower bound
+  for the one-hot pulse model is `2*log(1/(2*epsilon))`, or 7.824046 at 1%
+  error. The [proof](theory.md#7-a-valid-lower-bound-for-one-hot-arrival-time-pulses)
+  reveals the other source's counts and uses the probability of observing
+  no photons in two different pulse slots. The cost-ladder chart now uses
+  this supported lower bound.
+- **Joint argmax.** The roughly 1,768 versus 140.3 comparison gives a
+  12.6-fold ratio between demonstrated constructions. The joint value is
+  an upper bound from a local search. It does not establish that the joint
+  optimum is worse or that the observed gap cannot be a search limitation.
+- **Sorting and allocation.** The union-bound composition is valid when
+  each comparison meets its allocated error. Log-log interpolation of
+  feasible comparison costs does not automatically produce another
+  feasible comparison. The reported interpolated totals remain estimates
+  until their individual operating points are verified. Equal allocation
+  being best in a numerical search is not a general optimality theorem,
+  and the larger-N fits do not establish an asymptotic scaling law.
+
+The approximately 92.2931 two-channel bound has a different status: it follows
+from an analytic necessary-condition chain, with scalar values computed
+numerically. Sorting either source's brightness levels and chaining the
+minimum distinguishable Poisson mean gives the bound. The new
+[theory section](theory.md#6-two-separately-counted-channels) spells out why the
+argument also covers nonmonotone encoders.
+
+The subsequent threshold-family addition proves that integer margin
+`A-B >= d`, for `1 <= d <= K-1`, has the same optimal signal cost as a
+comparison on `K-d+1` levels. A nonconstant integer sum threshold `A+B >= T`
+corresponds to `L=min(T+1, 2K-T)` comparator levels after relabeling and,
+where needed, complementing the output. Constant predicates cost zero.
+The demonstration actually checks `A+B >= 2`; its description now states
+the relabeling needed to implement margin 2 directly. The K=3 background
+search is preserved, with its 51-point cutoff-randomization grid made explicit.
+These changes clarify the model and labels without changing the numerical
+search algorithms.
+
 ## Reproduce and inspect
 
 ```sh
@@ -224,8 +303,9 @@ remains an open literature question.
 ./reproduce.sh extensions
 ```
 
-The original quick suite has 33 passing numerical checks. The extension suite
-has 24 focused tests and reruns the analytic construction, complete resource
+The original quick suite had 33 passing numerical checks; after integrating
+the cost ladder and threshold-family additions, all 39 quick checks pass. The extension suite
+has 28 focused tests and reruns the analytic construction, complete resource
 study, feedback study and figure generation. Reruns go to
 `results/rerun/extensions/`, preserving the committed snapshots. The original
 long four-level lower-bound computation is separate.

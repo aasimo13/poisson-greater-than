@@ -1,0 +1,38 @@
+banded min second diff (convexity in eps, >=0 is convex): -112554519.00897756
+twochan min second diff (convexity in eps, >=0 is convex): -39581871.15087372
+B1 single elimination, sum eps<=0.01
+banded N 2 comps 1 eps_each 0.01 photons/comp 196.59 total 196.59 | optimizer best 196.59 eps [0.01]
+banded N 3 comps 2 eps_each 0.005 photons/comp 238.04 total 476.08 | optimizer best 476.08 eps [0.005, 0.005]
+banded N 4 comps 3 eps_each 0.003333 photons/comp 266.22 total 798.67 | optimizer best 798.67 eps [0.00333, 0.00333, 0.00333]
+banded N 8 comps 7 eps_each 0.001429 photons/comp 321.12 total 2247.82 | optimizer best 2247.82 eps [0.00143, 0.00143, 0.00143, 0.00143, 0.00143, 0.00143, 0.00143]
+twochan N 2 comps 1 eps_each 0.01 photons/comp 106.37 total 106.37 | optimizer best None eps None
+twochan N 3 comps 2 eps_each 0.005 photons/comp 125.25 total 250.49 | optimizer best 250.49 eps [0.005, 0.005]
+twochan N 4 comps 3 eps_each 0.003333 photons/comp 137.81 total 413.42 | optimizer best 413.42 eps [0.00333, 0.00333, 0.00333]
+twochan N 8 comps 7 eps_each 0.001429 photons/comp 163.02 total 1141.17 | optimizer best 1141.17 eps [0.00143, 0.00143, 0.00143, 0.00143, 0.00143, 0.00143, 0.00143]
+B2 sorting trees (worst-path photons = max over executed paths)
+banded N 3 uniform eps 0.003333 worst-path photons 798.67 (all-nodes eps=0.01/maxdepth)
+banded N 3 optimized per-stage worst-path photons 798.67 eps stages [0.00333, 0.00333, 0.00333] path sums [np.float64(0.00667), np.float64(0.01)]
+banded N 4 uniform eps 0.002 worst-path photons 1494.3 (all-nodes eps=0.01/maxdepth)
+banded N 4 optimized per-stage worst-path photons 1494.3 eps stages [0.002, 0.002, 0.002, 0.002, 0.002] path sums [np.float64(0.008), np.float64(0.01)]
+twochan N 3 uniform eps 0.003333 worst-path photons 413.42 (all-nodes eps=0.01/maxdepth)
+twochan N 3 optimized per-stage worst-path photons 413.42 eps stages [0.00333, 0.00333, 0.00333] path sums [np.float64(0.00667), np.float64(0.01)]
+twochan N 4 uniform eps 0.002 worst-path photons 763.87 (all-nodes eps=0.01/maxdepth)
+twochan N 4 optimized per-stage worst-path photons 763.87 eps stages [0.002, 0.002, 0.002, 0.002, 0.002] path sums [np.float64(0.008), np.float64(0.01)]
+B3 fits on eps in [0.001, 0.003, 0.01, 0.03, 0.1]
+banded log fit C=a ln(1/e)+b: a=54.755 b=-41.361 rms log-resid=0.0578 maxrel=0.0986
+banded power fit C=c*(1/e)^p: c=52.514 p=0.2802 rms log-resid=0.0472 maxrel=0.0651
+twochan log fit C=a ln(1/e)+b: a=27.133 b=-15.392 rms log-resid=0.0293 maxrel=0.0530
+twochan power fit C=c*(1/e)^p: c=28.901 p=0.2694 rms log-resid=0.0591 maxrel=0.0810
+Ford-Johnson counts {3: 3, 4: 5, 8: 16, 16: 46, 32: 121} ceil(log2 N!) {3: 3, 4: 5, 8: 16, 16: 45, 32: 118}
+EXTRAPOLATION banded N 8 FJ comps 16 eps 0.000625 log-fit total 5801.7 power-fit total 6640.0 eps below 0.001 (extrapolated)
+EXTRAPOLATION banded N 8 infobound comps 16 eps 0.000625 log-fit total 5801.7 power-fit total 6640.0 eps below 0.001 (extrapolated)
+EXTRAPOLATION banded N 16 FJ comps 46 eps 0.000217 log-fit total 19339.7 power-fit total 25663.2 eps below 0.001 (extrapolated)
+EXTRAPOLATION banded N 16 infobound comps 45 eps 0.000222 log-fit total 18865.1 power-fit total 24951.1 eps below 0.001 (extrapolated)
+EXTRAPOLATION banded N 32 FJ comps 121 eps 8.3e-05 log-fit total 57279.6 power-fit total 88516.9 eps below 0.001 (extrapolated)
+EXTRAPOLATION banded N 32 infobound comps 118 eps 8.5e-05 log-fit total 55697.2 power-fit total 85717.2 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 8 FJ comps 16 eps 0.000625 log-fit total 2956.6 power-fit total 3375.5 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 8 infobound comps 16 eps 0.000625 log-fit total 2956.6 power-fit total 3375.5 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 16 FJ comps 46 eps 0.000217 log-fit total 9818.2 power-fit total 12898.6 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 16 infobound comps 45 eps 0.000222 log-fit total 9578.0 power-fit total 12543.7 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 32 FJ comps 121 eps 8.3e-05 log-fit total 29001.4 power-fit total 44029.2 eps below 0.001 (extrapolated)
+EXTRAPOLATION twochan N 32 infobound comps 118 eps 8.5e-05 log-fit total 28202.0 power-fit total 42648.1 eps below 0.001 (extrapolated)
