@@ -1,0 +1,5 @@
+highspy==1.15.1
+matplotlib==3.11.2
+mpmath==1.4.1
+numpy==2.5.3
+scipy==1.18.1
