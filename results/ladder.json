@@ -1,0 +1,194 @@
+{
+ "error_target": 0.01,
+ "cost": "max expected signal photons, background excluded",
+ "lines": {
+  "threshold": [
+   {
+    "bg": 0.0,
+    "cost": 321.54,
+    "source": "src/threshold_optimum.py (reproduce.sh check)"
+   },
+   {
+    "bg": 0.1,
+    "cost": 321.7207464972016,
+    "err": 0.009999606632472336,
+    "x": [
+     160.861,
+     107.24,
+     53.621,
+     0.001
+    ],
+    "y": [
+     0.0,
+     53.62,
+     107.24,
+     160.859
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py monotone nominal, BG=0.1)"
+   },
+   {
+    "bg": 1.0,
+    "cost": 323.9788705213117,
+    "err": 0.009999952283621608,
+    "x": [
+     161.99,
+     107.992,
+     53.996,
+     0.0
+    ],
+    "y": [
+     0.001,
+     53.997,
+     107.993,
+     161.989
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py monotone nominal, BG=1.0)"
+   },
+   {
+    "bg": 3.0,
+    "cost": 328.73630980985195,
+    "err": 0.009999691530536698,
+    "x": [
+     164.37,
+     109.577,
+     54.789,
+     0.001
+    ],
+    "y": [
+     0.0,
+     54.79,
+     109.578,
+     164.367
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py monotone nominal, BG=3.0)"
+   }
+  ],
+  "banded": [
+   {
+    "bg": 0.0,
+    "cost": 196.62,
+    "source": "src/banded.py K=4 exact LP budget (reproduce.sh check)"
+   },
+   {
+    "bg": 0.1,
+    "cost": 229.7186176756568,
+    "err": 0.009999972633484778,
+    "x": [
+     114.859,
+     6.481,
+     0.001,
+     35.195
+    ],
+    "y": [
+     35.195,
+     0.001,
+     6.481,
+     114.86
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py free nominal, BG=0.1)"
+   },
+   {
+    "bg": 1.0,
+    "cost": 290.68191844372603,
+    "err": 0.009999565713070745,
+    "x": [
+     145.273,
+     10.133,
+     0.002,
+     47.139
+    ],
+    "y": [
+     47.196,
+     0.002,
+     10.14,
+     145.409
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py free nominal, BG=1.0)"
+   },
+   {
+    "bg": 3.0,
+    "cost": 342.8439886828778,
+    "err": 0.00999996683302132,
+    "x": [
+     171.422,
+     13.447,
+     0.002,
+     57.706
+    ],
+    "y": [
+     57.708,
+     0.002,
+     13.44,
+     171.422
+    ],
+    "source": "results/ladder_opt.jsonl (src/opt.py free nominal, BG=3.0)"
+   }
+  ],
+  "two_channel": [
+   {
+    "bg": 0.0,
+    "cost": 106.366,
+    "source": "results/twotype_bound.txt stored design, src/price_curve.py"
+   },
+   {
+    "bg": 0.1,
+    "cost": 156.78522387353516,
+    "source": "src/ladder_points.py: stored 106.4 design rescaled, 2D LP, bisection"
+   },
+   {
+    "bg": 1.0,
+    "cost": 239.0606882072754,
+    "source": "src/ladder_points.py: stored 106.4 design rescaled, 2D LP, bisection"
+   },
+   {
+    "bg": 3.0,
+    "cost": 317.19198152636716,
+    "source": "src/ladder_points.py: stored 106.4 design rescaled, 2D LP, bisection"
+   }
+  ],
+  "arrival_time": [
+   {
+    "bg": 0.0,
+    "cost": 20.972184273337465,
+    "source": "results/timecomp.json winner"
+   },
+   {
+    "bg": 0.1,
+    "cost": 28.982753492378876,
+    "source": "results/timecomp.json beta_costs (fixed shape rescale, upper bound)"
+   },
+   {
+    "bg": 0.5,
+    "cost": 38.29053029358241,
+    "source": "results/timecomp.json beta_costs (fixed shape rescale, upper bound)"
+   },
+   {
+    "bg": 1.0,
+    "cost": 44.90701781938264,
+    "source": "results/timecomp.json beta_costs (fixed shape rescale, upper bound)"
+   }
+  ]
+ },
+ "certified_floor": {
+  "threshold": {
+   "bg": 0.0,
+   "cost": 321.5366,
+   "source": "src/threshold_optimum.py certified bound"
+  },
+  "banded": {
+   "bg": 0.0,
+   "cost": 195.53,
+   "source": "reproduce.sh full: lb_pairwise2.py 4 200 1500 8"
+  },
+  "two_channel": {
+   "bg": 0.0,
+   "cost": 92.293135,
+   "source": "results/twotype_bound.txt"
+  },
+  "arrival_time": {
+   "bg": 0.0,
+   "cost": 9.111450675264145,
+   "source": "results/timecomp.json bound (loose)"
+  }
+ }
+}

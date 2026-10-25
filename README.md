@@ -1,10 +1,23 @@
-# Computing A > B with fewer photons
+# What it costs to compare two numbers with light
 
-Two separate light sources can let one photon counter decide whether A > B using 39% fewer detected photons than the best possible threshold scheme. The trick is to reorder each source's brightness levels so the pairs fall into alternating bands, which moves the hard decisions into dim light where photon noise is small. The threshold baseline is proved optimal, and the new design is certified within 0.55% of the best any scheme can do. This holds in an idealized model (perfect detector, no stray light, sources that switch fully off); stray light shrinks the saving to about 10% at one stray count per window.
+Two light sources each hold a number from 0 to 3. A photon counting receiver has to decide whether A > B and may be wrong at most 1% of the time for any pair. This repo prices that decision under shot noise for every physical resource you could spend on it, with a proved or certified floor next to each price:
+
+| How the two sources are told apart | Photons at 1% error, no stray light | Certified floor | At 1 stray count per window |
+| --- | --- | --- | --- |
+| They aren't: one detector, monotone levels, one threshold | 321.5 | 321.54 (proved) | 324.0 |
+| They aren't: one detector, reordered "banded" levels | 196.6 | 195.53 | 290.7 |
+| Two separable channels (two colors, two molecule types) | 106.4 | 92.29 | 239.1 |
+| Arrival time: four time slots, one detector | 21.0 | 9.11 (loose) | 44.9 |
+
+![Cost of the comparison against stray light for the four designs, with certified floors marked](figures/fig_ladder.png)
+
+Three things the ladder says. Reordering the brightness levels (the banded trick that started this project) saves 39% on one detector, and that number is tight. Telling the sources apart beats any reordering, and encoding in time beats everything by about 9x, because shot noise punishes amplitude and not timing. All of the cheap designs lean on reading an empty window as information, so stray light erodes them; time encoding erodes slowest and still costs less at one stray count than the others do in the dark.
+
+Two negatives are recorded as well: a joint encoding of three sources on one detector to pick the largest costs about 12x more than two pairwise comparisons, and the banded design leaks more about each input than the threshold design does.
 
 ![The 16 input pairs for each design on a square root photon scale, with the decoder's answer shaded and the close calls marked](figures/fig_bands.png)
 
-Run `./reproduce.sh quick` to check 33 headline numbers in about two minutes.
+Run `./reproduce.sh quick` to check 37 headline numbers in about four minutes.
 
 ## The problem
 
@@ -69,6 +82,31 @@ The same question for receivers that count molecules (src/mc.py). Cost is the wo
 - With decision feedback (the receiver also sees its previous answer, or, as a best case, the exact previous pair), the banded design wins only at 1% spillover: 319.3 vs 326.2 with the previous answer, 287.4 vs 325.5 with the exact previous pair. From 3% on, the threshold design wins in every case (results/mc_fb*.jsonl).
 - Not modeled: reaction kinetics, nonlinear testbed responses, and spillover from more than one previous message.
 
+## Two separable channels: a certified floor
+
+The two-type design (106.4) was found by search. src/twotype_bound.py adds a floor. Any two input pairs that differ in one coordinate and have opposite answers, such as (1,1) false and (2,1) true, force the receiver to tell Poisson(x[1]) from Poisson(x[2]) on one count alone, with both errors at most 1%. Chaining those Neyman-Pearson tests from zero gives minimum levels 0, 4.595, 19.94, 46.15 for each channel (the randomized test gives ln 99, not ln 100, for the first step), so the cost is at least 2 x 46.15 = 92.29 for any encoder and any decoder. The 106.4 design sits 15.2% above that floor; the floor is loose because it ignores that one decoder has to serve all 16 pairs at once.
+
+## Arrival time
+
+src/timecomp.py encodes each number as a time slot instead of a brightness. A emits a pulse into slot A, B into slot B, and one detector counts per slot; deciding A > B means deciding which pulse came first, with A = B landing both pulses in the same slot. Equal pulse energies do not work at all, because (1,0) and (0,1) then look identical, so the design is lopsided: A pulses of about 4.8 photons and B pulses of about 16.1. At 1% error the cost is 20.97 photons (LP decoder, rechecked with mpmath), against 196.6 for the banded intensity design, 321.5 for threshold and 106.4 for two channels. The price is four guaranteed separable slots and a detector with slot timing instead of one window. The floor from three pairwise Neyman-Pearson constraints is 9.11 and is loose. With stray light the cost is 28.98, 38.29 and 44.91 at 0.1, 0.5 and 1 count per slot (fixed shape, rescaled; upper bounds); 3 counts per slot was not resolved.
+
+## Price curve, sorting and argmax
+
+src/price_curve.py prices one comparison as a function of the error target, for the banded, threshold and two-channel designs and the two-channel floor:
+
+| Error target | Banded | Threshold | Two channels | Two-channel floor |
+| --- | --- | --- | --- | --- |
+| 0.1% | 346.5 | 567.0 | 174.6 | 154.2 |
+| 1% | 196.6 | 321.5 | 106.4 | 92.3 |
+| 10% | 94.0 | 97.9 | 49.7 | 33.0 |
+| 30% | 37.1 | 16.2 | 19.2 | 8.1 |
+
+Cost grows about like (1/error)^0.28, and the threshold design is the cheaper of the two one-detector designs once the error target is 20% or higher; the banded trick is a low-error trick.
+
+src/tournament.py builds max-of-N and sorting out of priced comparisons under a union bound (each comparison gets an error budget, the budgets sum to 1%). Equal budgets per comparison turned out optimal in every case, and allocating by tree depth does not help because the longest path binds. Max of 4 items: 799 photons banded, 413 two channels. Max of 8: 2,248 and 1,141. Sorting 4 items by the 5-comparison tree: 1,494 and 764. Extrapolated to 32 items, sorting costs on the order of 30,000 to 45,000 photons on two channels, scaling like N (log N) squared (interpolated price curve; order of magnitude only).
+
+src/argmax_joint.py asks whether three sources on one detector can be encoded so the receiver outputs which one is largest directly, instead of two pairwise comparisons in sequence. For K = 3 the best joint design found costs 1,768 photons (multiclass LP decoder, rechecked with mpmath), against 140.3 for two banded comparisons at 0.5% each. The joint encoding needs nine distinguishable brightness levels on a geometric ladder, because the sum of three sources hides who sent what. The 1,768 is best found, not proved minimal, but the 12x gap is not a search artifact. For argmax, decompose into pairwise comparisons.
+
 ## Quick start
 
     python3 -m pip install -r requirements.txt
@@ -96,6 +134,12 @@ Run everything from the repo root. The scripts use nice -n 15 in reproduce.sh; s
 | src/mc_check.py | Rechecks the stored best molecular and feedback designs. Seconds (quick) or minutes (all). |
 | src/calibration.py | Cost of calibrating the gain with pilot pulses versus living with drift. Seconds. |
 | src/figure_bands.py | Draws figures/fig_bands.png and .svg. |
+| src/twotype_bound.py | Verifies the two-channel 106.4 design (2D LP, mpmath recheck) and computes the Neyman-Pearson chain floor 92.29. About 75 s. |
+| src/price_curve.py | Cost of one comparison versus the error target for banded, threshold, two channels, and the two-channel floor. Seconds. |
+| src/tournament.py | Max-of-N and sorting costs from priced comparisons under a union bound, plus the scaling fit. Seconds. |
+| src/argmax_joint.py | Joint argmax of three sources on one detector, K = 3: multiclass LP decoder, verify of the stored design, --search reruns the ladder-start search (about 11 minutes). |
+| src/timecomp.py | Arrival-time comparator with four slots: verify of the stored design, --beta for the stray-light rescale, --bound for the pairwise floor. Seconds to a few minutes. |
+| src/ladder_points.py, src/figure_ladder.py | Collects the ladder numbers into results/ladder.json (each with a source field) and draws figures/fig_ladder.png. The banded and threshold stray-light points come from queues/qLadder.sh runs of opt.py. |
 | queues/*.sh | The exact command lists of the original long runs (drift, background, error targets, calibration). |
 | data/ | h tables, row 0 is mu, row 1 is h(mu). |
 | results/ | Raw JSON lines of every original run. |
@@ -121,4 +165,8 @@ Any scheme must separate every true pair mean m_t from every false pair mean m_f
 - Designs from opt.py come from Nelder Mead on a small number of starts. They are upper bounds only.
 - The novelty search (is this construction or bound already known) is incomplete.
 - The first round scripts that produced some numbers were lost and rewritten here. Every rewritten script reproduces the published numbers; the one difference (196.70 versus a looser 196.75) is explained above.
+- The ladder chart is uneven between lines: the threshold and banded stray-light points re-optimize the shape per background, while the two-channel and arrival-time points rescale a fixed shape, so those two lines are upper bounds that a per-background search could lower.
+- The arrival-time floor (9.11) and the two-channel floor (92.29) come from pairwise necessary conditions only and are loose; the arrival-time design is within 2.3x of its floor, the two-channel design within 15%.
+- The tournament and sorting costs use a union bound and interpolate the price curve in log-log, so they are conservative and approximate; the N = 8 to 32 extrapolations are order of magnitude only.
+- The joint argmax search is Nelder-Mead from structured starts in nine dimensions; 1,768 is an upper bound on the joint optimum.
 - The calibration model mixes a worst case peak photon cost with an averaged pilot cost, and assumes the gain is constant between calibrations. It is a modeling choice, stated so it can be argued with.
