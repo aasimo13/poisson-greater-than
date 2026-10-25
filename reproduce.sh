@@ -75,6 +75,25 @@ quick() {
   $PY src/make_hgrid.py > "$TMP/hg.txt" 2>&1; show < "$TMP/hg.txt"
   check "h tables identical to shipped files (1 = yes)" "$(grep -c '^ALL MATCH' "$TMP/hg.txt")" 1 0
 
+  echo "== 7. leakage.py (what the count reveals beyond the answer)"
+  LEAK_OUT="$TMP/leak.json" $PY src/leakage.py > "$TMP/leak.txt" 2>&1; show < "$TMP/leak.txt"
+  lk() { awk -v d="$1" -v k="$2" '/^[^ ]/{cur=$0} index(cur,d)==1 && $1==k {print $2}' "$TMP/leak.txt"; }
+  check "leak beyond answer, threshold (bits)" "$(lk threshold leak_beyond_answer_bits)" 1.5739 0.0005
+  check "leak beyond answer, banded (bits)" "$(lk banded leak_beyond_answer_bits)" 1.5750 0.0005
+  check "leak about A alone, threshold (bits)" "$(lk threshold leak_A_beyond_answer_bits)" 0.3322 0.0005
+  check "leak about A alone, banded (bits)" "$(lk banded leak_A_beyond_answer_bits)" 0.6197 0.0005
+  check "best guess of A from the count, banded" "$(lk banded guess_A_from_N)" 0.6224 0.0005
+
+  echo "== 8. mc_check.py (molecular receivers, spillover, feedback)"
+  $PY src/mc_check.py quick > "$TMP/mc.txt" 2>&1; show < "$TMP/mc.txt"
+  mcv() { awk -F': ' -v l="$1" '$1==l {print $2}' "$TMP/mc.txt"; }
+  check "molecules: two types cancelling" "$(mcv 'two types cancelling, no spillover')" 201.77 0.1
+  check "molecules: two types counted separately" "$(mcv 'two types counted separately, no spillover')" 106.37 0.1
+  check "molecules: threshold, 10% spillover" "$(mcv 'one type, threshold, 10% spillover')" 720.78 0.2
+  check "molecules: cancelling, 10% spillover" "$(mcv 'two types cancelling, 10% spillover')" 817.80 0.2
+  check "molecules: banded, 1% spillover, previous answer known" "$(mcv 'one type, banded, 1% spillover, previous answer known')" 319.33 0.2
+  check "molecules: banded, 1% spillover, previous pair known" "$(mcv 'one type, banded, 1% spillover, previous pair known')" 287.38 0.2
+
   echo
   echo "============ SUMMARY ============"
   printf '%-60s %-14s %-14s %s\n' check got expected status
@@ -96,6 +115,12 @@ full() {
     "python3 src/gaussian_milp.py 5                                                  # K=5 Gaussian MILP: 8d (about 1 to 2 min)"
     "python3 src/banded.py 8"
     "python3 src/threshold_optimum.py table                                          # K=3..10 table (about 1 min)"
+    "python3 src/mc_check.py all                                                     # also rechecks two types at 10% spillover: 285.85"
+    "python3 src/mc.py cancel 300; python3 src/mc.py two 250                         # molecular receivers, no spillover: 201.8, 106.4"
+    "ISI=0.1 python3 src/mc.py shared 250; ISI=0.1 python3 src/mc.py cancel 250      # 10% spillover: 720.8, 817.9"
+    "ISI=0.01 python3 src/mc.py shared 250; ISI=0.03 python3 src/mc.py shared 250    # 1% and 3% spillover: 327.6 vs 335.9, 350.8"
+    "ISI=0.1 NSTART=2 EXTRA='[[[0,15,42,92],[0,16,44,95]]]' python3 src/mc.py two 150  # 10% spillover, separate counting: 285.9"
+    "ISI=0.01 FEEDBACK=answer python3 src/mc.py shared 250                           # feedback runs; also 0.03, 0.1 and FEEDBACK=genie"
     "python3 src/check_bgdrift.py                                                    # refit and test decoders for results/bgdrift.jsonl"
     "bash queues/qA.sh; bash queues/qB.sh; bash queues/qC.sh                         # drift plus background runs -> \$OUT/bgdrift.jsonl"
     "bash queues/qCal.sh                                                             # drift calibration runs -> \$OUT/calib.jsonl"

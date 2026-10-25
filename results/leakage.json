@@ -1,0 +1,41 @@
+{
+ "threshold (best single threshold)": {
+  "I_total_bits": 2.5112685721074097,
+  "I_answer_bits": 0.9373521669873766,
+  "leak_beyond_answer_bits": 1.5739164051200332,
+  "leak_A_beyond_answer_bits": 0.3321783752353298,
+  "leak_B_beyond_answer_bits": 0.3321783752353289,
+  "guess_pair_from_N": 0.4203633022120267,
+  "guess_pair_from_answer": 0.125,
+  "guess_A_from_N": 0.43750000000000727,
+  "guess_A_from_answer": 0.4375,
+  "peak_photons": 321.54007016852756,
+  "distinct_levels": 7
+ },
+ "banded (best known)": {
+  "I_total_bits": 2.5053661501036713,
+  "I_answer_bits": 0.9303315660796985,
+  "leak_beyond_answer_bits": 1.5750345840239728,
+  "leak_A_beyond_answer_bits": 0.6197471899058984,
+  "leak_B_beyond_answer_bits": 0.6197471899058984,
+  "guess_pair_from_N": 0.4841550461931119,
+  "guess_pair_from_answer": 0.125,
+  "guess_A_from_N": 0.6223824443560955,
+  "guess_A_from_answer": 0.4375,
+  "peak_photons": 196.59357531366294,
+  "distinct_levels": 10
+ },
+ "ChatGPT candidate (deterministic)": {
+  "I_total_bits": 2.512510269675854,
+  "I_answer_bits": 0.9320930387273973,
+  "leak_beyond_answer_bits": 1.5804172309484565,
+  "leak_A_beyond_answer_bits": 0.6219158012952617,
+  "leak_B_beyond_answer_bits": 0.6219158012952617,
+  "guess_pair_from_N": 0.48545924309636235,
+  "guess_pair_from_answer": 0.125,
+  "guess_A_from_N": 0.6225936755961794,
+  "guess_A_from_answer": 0.4375,
+  "peak_photons": 201.0,
+  "distinct_levels": 10
+ }
+}

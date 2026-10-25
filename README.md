@@ -4,7 +4,7 @@ Two separate light sources can let one photon counter decide whether A > B using
 
 ![The 16 input pairs for each design on a square root photon scale, with the decoder's answer shaded and the close calls marked](figures/fig_bands.png)
 
-Run `./reproduce.sh quick` to check 22 headline numbers in about two minutes.
+Run `./reproduce.sh quick` to check 33 headline numbers in about two minutes.
 
 ## The problem
 
@@ -42,10 +42,37 @@ The remaining drift, background and error target runs are in results/ (raw JSON 
 
 Where the first round and this repo differ: the first round reported 196.75 for the 201 photon shape after LP rescaling. The exact value is 196.70 (see the table); 196.75 came from a looser search and also passes. core.py was not changed to force a match.
 
+## Privacy: what the count leaks
+
+The banded design does not leak less than the threshold design; it leaks more about each input. With inputs uniform and each design at its 1% budget (src/leakage.py):
+
+| Design | Leak beyond the answer, I(N; A,B \| answer) | Leak about A alone | Best guess of A from the count |
+| --- | --- | --- | --- |
+| Threshold, 321.5 photons | 1.574 bits | 0.332 bits | 43.8% (same as from the answer alone) |
+| Banded, 196.6 photons | 1.575 bits | 0.620 bits | 62.2% |
+
+The threshold count depends only on A minus B; the banded count gives pairs their own levels (zero photons means A = 2, B = 1). Exact computation, checked by a 400,000 trial simulation.
+
+## Molecular communication
+
+The same question for receivers that count molecules (src/mc.py). Cost is the worst case expected molecules arriving; every design meets 1% worst case error; all values are best found by search (2 or 3 starts) and rechecked, not proved, except the threshold row with no spillover.
+
+| Spillover from the previous message | One type, threshold | One type, banded | Two types that cancel 1:1 | Two types counted separately |
+| --- | --- | --- | --- | --- |
+| 0 | 321.5 | 196.6 | 201.8 | 106.4 |
+| 1% | 327.6 | 335.9 | not run | not run |
+| 3% | 350.8 | none found | not run | not run |
+| 10% | 720.8 | none found | 817.8 | 285.8 |
+
+- Cancelling molecule types (as in Long et al. 2025, arXiv 2502.20484) lose information: counting both types always sees at least as much as their difference.
+- Spillover is modeled as a fraction of a uniformly random, unknown previous message. "None found" means no searched design reached 1% below 20,000 molecules.
+- With decision feedback (the receiver also sees its previous answer, or, as a best case, the exact previous pair), the banded design wins only at 1% spillover: 319.3 vs 326.2 with the previous answer, 287.4 vs 325.5 with the exact previous pair. From 3% on, the threshold design wins in every case (results/mc_fb*.jsonl).
+- Not modeled: reaction kinetics, nonlinear testbed responses, and spillover from more than one previous message.
+
 ## Quick start
 
     python3 -m pip install -r requirements.txt
-    ./reproduce.sh quick        # about 2 minutes, prints each headline number next to its expected value, PASS or FAIL
+    ./reproduce.sh quick        # about 2 minutes, 33 checks; prints each headline number next to its expected value, PASS or FAIL
     ./reproduce.sh full         # lists the long jobs with their exact commands
     ./reproduce.sh full --run   # runs them one after another (hours); queue scripts write to results/rerun/
 
@@ -64,6 +91,9 @@ Run everything from the repo root. The scripts use nice -n 15 in reproduce.sh; s
 | src/lb_pairwise2.py | Certified lower bound through the pairwise relaxation as a MILP (needs h on a grid; HGRID, MONO, OBJ and USE_HIGHS environment variables select the variants). K = 3 takes about 1 minute, K = 4 takes tens of minutes per stage. |
 | src/opt.py | Re-optimizes shapes under gain drift, background and average cost, with a robust LP decoder (Nelder Mead; environment variables BG and EXTRA). |
 | src/check_bgdrift.py | Refits and retests the drift plus background designs. |
+| src/leakage.py | Information the photon count leaks beyond the answer, per design. Seconds. |
+| src/mc.py | Molecular receivers (one shared type, cancelling types, separately counted types), spillover (ISI) and decision feedback (FEEDBACK), with shape search. Environment variables ISI, FEEDBACK, EXTRA, NSTART. Minutes to an hour per run. |
+| src/mc_check.py | Rechecks the stored best molecular and feedback designs. Seconds (quick) or minutes (all). |
 | src/calibration.py | Cost of calibrating the gain with pilot pulses versus living with drift. Seconds. |
 | src/figure_bands.py | Draws figures/fig_bands.png and .svg. |
 | queues/*.sh | The exact command lists of the original long runs (drift, background, error targets, calibration). |

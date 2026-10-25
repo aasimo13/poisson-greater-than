@@ -1,0 +1,15 @@
+{"kind": "shared", "start": [[3.0, 2.0, 1.0, 0.0], [0.0, 1.0, 2.0, 3.0]], "P": 720.801, "x": [360.4, 240.307, 120.214, 0.12], "y": [0.12, 120.214, 240.307, 360.4]}
+{"kind": "shared", "start": [[98.3, 4.6, 0.0, 28.8], [28.8, 0.0, 4.6, 98.3]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+BEST shared ISI 0.1 720.801 256.5 s
+{"kind": "cancel", "start": [[0.0, 1.0, 2.0, 3.0], [0.0, 1.0, 2.0, 3.0]], "P": 817.871, "x": [0.126, 119.909, 248.223, 399.231], "y": [0.143, 116.723, 256.513, 418.64]}
+{"kind": "cancel", "start": [[0.0, 1.0, 3.0, 6.0], [0.0, 1.0, 3.0, 6.0]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+{"kind": "cancel", "start": [[98.3, 4.6, 0.0, 28.8], [28.8, 0.0, 4.6, 98.3]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+BEST cancel ISI 0.1 817.871 342.2 s
+{"kind": "shared", "start": [[3.0, 2.0, 1.0, 0.0], [0.0, 1.0, 2.0, 3.0]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+{"kind": "shared", "start": [[98.3, 4.6, 0.0, 28.8], [28.8, 0.0, 4.6, 98.3]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+BEST shared ISI 0.3 inf 330.8 s
+{"kind": "cancel", "start": [[0.0, 1.0, 2.0, 3.0], [0.0, 1.0, 2.0, 3.0]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+{"kind": "cancel", "start": [[0.0, 1.0, 3.0, 6.0], [0.0, 1.0, 3.0, 6.0]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+{"kind": "cancel", "start": [[98.3, 4.6, 0.0, 28.8], [28.8, 0.0, 4.6, 98.3]], "P": Infinity, "x": [Infinity, Infinity, Infinity, Infinity], "y": [Infinity, Infinity, Infinity, Infinity]}
+BEST cancel ISI 0.3 inf 750.9 s
+DONE1
