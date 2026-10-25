@@ -70,7 +70,15 @@ for ax, (title, x, y) in zip(axes, designs):
         c = TRUE_C if LAB[j] else FALSE_C
         ax.plot(v, 0.25 + 0.17 * level, "o", ms=8, mfc=c if LAB[j] else "white",
                 mec=c, mew=1.8, zorder=3)
-    ax.set_ylim(0, 1)
+    # mark the close calls: neighbors on the count axis whose answers differ
+    srt = np.argsort(m)
+    for a_, b_ in zip(srt[:-1], srt[1:]):
+        if LAB[a_] != LAB[b_] and m[b_] - m[a_] > 1e-6:
+            u0, u1 = np.sqrt(max(m[a_], 0)), np.sqrt(m[b_])
+            ax.plot([u0, u0, u1, u1], [0.90, 0.95, 0.95, 0.90], color=INK, lw=1.1, zorder=4)
+            ax.text((u0 + u1) / 2, 0.98, f"{m[a_]:.0f} vs {m[b_]:.0f}" if m[a_] >= 1 else f"0 vs {m[b_]:.1f}",
+                    ha="center", va="bottom", fontsize=9.5, color=INK, zorder=4)
+    ax.set_ylim(0, 1.18)
     ax.set_yticks([])
     for sp in ["left", "right", "top"]:
         ax.spines[sp].set_visible(False)

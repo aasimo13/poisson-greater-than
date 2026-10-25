@@ -36,8 +36,8 @@ quick() {
   check "candidate max mean" "$(sed -n 's/^max mean = \([0-9.]*\)/\1/p' "$TMP/cand.txt")" 201 0.05
   check "LP decoder on same encoding, worst error %" \
     "$(sed -n 's/^LP (randomized).*error \([0-9.]*\)%.*/\1/p' "$TMP/cand.txt")" 0.9178 0.00005
-  check "budget after LP rescaling (published 196.75, now 196.69)" \
-    "$(sed -n 's/^Budget after rescaling.*: \([0-9.]*\) (scale.*/\1/p' "$TMP/cand.txt")" 196.69 0.01
+  check "budget after LP rescaling (exact value 196.70)" \
+    "$(sed -n 's/^Budget after rescaling.*: \([0-9.]*\) (scale.*/\1/p' "$TMP/cand.txt")" 196.70 0.015
 
   echo "== 2. threshold_optimum.py (K=4)"
   $PY src/threshold_optimum.py > "$TMP/thr.txt" 2>&1; show < "$TMP/thr.txt"

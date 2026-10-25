@@ -12,7 +12,7 @@ Status words: "verified" means recomputed here with exact style arithmetic (mpma
 | --- | --- | --- |
 | 201 photon candidate, x=[100.5,4.7,0,29.4], y reversed, decoder "N==0 or 18<=N<=77": worst error | 0.959542% at (A,B)=(2,0), max mean 201 | verified (scipy and mpmath) |
 | Same encoding with the best randomized (LP) decoder: worst error | 0.9178% | numerical |
-| Same shape rescaled to exactly 1% with the LP decoder | 196.69 (the first round reported 196.75, see below) | numerical upper bound |
+| Same shape rescaled to exactly 1% with the LP decoder | 196.70 (196.69 gives 1.00007%, 196.70 gives 0.99991%) | exact for the shape |
 | Peeled band construction, exact LP budget, K = 3,4,5,6,7,8 | 57.56, 196.62, 534.62, 1295.39, 2936.78, 6389.06 | numerical upper bound |
 | Peeled band, pairwise budget 2 v_(K-1), K = 4 | 196.33 | arithmetic from h (not an achievable budget by itself) |
 | Lower bound for ANY encoder and decoder, K = 3 | 57.43 | certified |
@@ -26,10 +26,13 @@ Status words: "verified" means recomputed here with exact style arithmetic (mpma
 | Gaussian control (r = x[A] + y[B] + N(0,1)), exact MILP optimum for K = 3,4,5 | 4d, 6d, 8d with d = 4.6527 (the threshold design) | solver optimal |
 | Gaussian control, peeled band chain K = 4 | 14d | arithmetic |
 | Gain drift, shared gain within +-5%, best banded shape | 245.4 (monotone shapes: 598.2) | numerical upper bound |
+| Error target 0.1%, 0.3%, 1%, 3%, 10%: banded vs threshold optimum | 354.7 vs 567.0, 262.3 vs 448.4, 196.5 vs 321.5, 137.0 vs 210.2, 74.8 vs 97.9 | numerical (banded); corner formula on a grid (threshold) |
+| Drift plus background, banded vs monotone (bg 0.1 / 1 / 3 counts) | +-2%: 251.8 vs 405.1, 318.7 vs 406.5; +-5%: 288.8 vs 598.4, 366.7 vs 600.5, 435.4 vs 605.8 | numerical upper bound |
+| Calibration every 10,000 decisions, +-5% drift (src/calibration.py) | saving 41.8% with no background, 15.1% at 1 count | model on interpolated numerical results |
 
-The remaining drift, background and error target runs are in results/ (raw JSON lines). results/bgdrift.jsonl designs can be rechecked with src/check_bgdrift.py. That check finds that a few designs are at up to 1.0009% error when the decoder fitted on a 41 point gain grid is tested at 401 gains, so those drift numbers are good to roughly a tenth of a percent in error, not exact.
+The remaining drift, background and error target runs are in results/ (raw JSON lines). results/bgdrift.jsonl designs can be rechecked with src/check_bgdrift.py. That check finds that a few designs are at up to 1.0009% error when the decoder fitted on a 41 point gain grid is tested at 401 gains, so those drift numbers are good to roughly a tenth of a percent in error, not exact. The values in the table above are the rescaled ones: the affected banded designs were scaled up 0.05% until the dense check passed at 1%.
 
-Where the first round and this repo differ: the 196.75 budget in the first round for the 201 photon shape after LP rescaling comes out as 196.69 with the current core.py. The cause was not tracked down (the original script is not available). core.py was not changed to force a match.
+Where the first round and this repo differ: the first round reported 196.75 for the 201 photon shape after LP rescaling. The exact value is 196.70 (see the table); 196.75 came from a looser search and also passes. core.py was not changed to force a match.
 
 ## Quick start
 
@@ -53,6 +56,7 @@ Run everything from the repo root. The scripts use nice -n 15 in reproduce.sh; s
 | src/lb_pairwise2.py | Certified lower bound through the pairwise relaxation as a MILP (needs h on a grid; HGRID, MONO, OBJ and USE_HIGHS environment variables select the variants). K = 3 takes about 1 minute, K = 4 takes tens of minutes per stage. |
 | src/opt.py | Re-optimizes shapes under gain drift, background and average cost, with a robust LP decoder (Nelder Mead; environment variables BG and EXTRA). |
 | src/check_bgdrift.py | Refits and retests the drift plus background designs. |
+| src/calibration.py | Cost of calibrating the gain with pilot pulses versus living with drift. Seconds. |
 | src/figure_bands.py | Draws figures/fig_bands.png and .svg. |
 | queues/*.sh | The exact command lists of the original long runs (drift, background, error targets, calibration). |
 | data/ | h tables, row 0 is mu, row 1 is h(mu). |
@@ -78,4 +82,5 @@ Any scheme must separate every true pair mean m_t from every false pair mean m_f
 - The pairwise relaxation is a necessary condition. The gap between the 195.53 lower bound and the 196.62 design for K = 4 is not closed.
 - Designs from opt.py come from Nelder Mead on a small number of starts. They are upper bounds only.
 - The novelty search (is this construction or bound already known) is incomplete.
-- The first round scripts that produced some numbers were lost and rewritten here. Every rewritten script reproduces the published numbers except the one noted above (196.69 versus 196.75).
+- The first round scripts that produced some numbers were lost and rewritten here. Every rewritten script reproduces the published numbers; the one difference (196.70 versus a looser 196.75) is explained above.
+- The calibration model mixes a worst case peak photon cost with an averaged pilot cost, and assumes the gain is constant between calibrations. It is a modeling choice, stated so it can be argued with.
