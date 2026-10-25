@@ -2,7 +2,7 @@
 
 Two transmitters hold integers A and B in {0..K-1}. Each one sends out a nonnegative light intensity, x[A] and y[B], without seeing the other. A single photon counter sees N, a Poisson count with mean x[A] + y[B] + background. The receiver may use any randomized function of N to decide whether A > B (ties count as false). The worst case error over all K squared pairs must be at most 1%. The cost is P, the largest expected number of detected photons over all pairs, which is max(x) + max(y). The question is how small P can be, and what the encoders look like. The headline case is K = 4, where a threshold style design needs about 321.5 photons and a "peeled band" design with an alternating decoder needs about 196.6, against a certified lower bound of 195.53.
 
-The original 201 photon candidate came from a ChatGPT conversation and was independently verified here (src/verify_candidate.py). No license is included on purpose; the owner decides.
+The original 201 photon candidate came from a ChatGPT conversation and was independently verified here (src/verify_candidate.py). Released under the MIT License (see LICENSE).
 
 ## Results
 
