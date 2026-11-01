@@ -69,12 +69,36 @@ def minimize_P(K, direction, n_scan=240):
     return best_u, s_star(best_u), best_v, umax
 
 
+def near_equal_poisson_bound(u, target=TARGET):
+    """Lower bound on s when Pois(s) and Pois(u*s) each have error <= target.
+
+    Their affinity is exp(-s*(sqrt(u)-1)**2/2). The total-variation bound
+    TV <= sqrt(1-affinity**2), together with TV >= 1-2*target, gives this
+    necessary condition. It covers the interval next to u=1 without solving
+    numerically at huge Poisson means. See docs/theory.md.
+    """
+    if not 0 < target < 0.5 or not np.isfinite(u) or u <= 1:
+        raise ValueError("Require 0 < target < 0.5 and finite u > 1")
+    delta = (u - 1.0) / (np.sqrt(u) + 1.0)
+    return -np.log(4.0 * target * (1.0 - target)) / delta**2
+
+
 def certify(K, direction, claimed, tol, u_start=1.0 + 1e-9, max_intervals=200000):
-    """Adaptive bisection. Returns (worst interval bound, number of intervals, ok)."""
+    """Adaptive bisection plus analytic prefix bound; returns (bound, count, ok).
+
+    Both g functions are >= 1 for u > 1, so the bound on s is also a bound
+    on P. It is decreasing with u: its value at u_start covers (1,u_start).
+    Reject a start that would leave that prefix uncertified.
+    """
     g, umax = setup(K, direction)
+    if not 1.0 < u_start <= umax:
+        raise ValueError("u_start must lie in (1, umax]")
+    prefix_bound = near_equal_poisson_bound(u_start)
+    if prefix_bound < claimed - tol:
+        raise ValueError("u_start leaves a prefix below the claimed lower bound")
     stack = [(u_start, umax)]
     n = 0
-    worst = np.inf
+    worst = prefix_bound
     while stack:
         u1, u2 = stack.pop()
         b = s_star(u2) * g(u1)

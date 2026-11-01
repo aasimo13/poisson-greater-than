@@ -1,20 +1,23 @@
-"""Collect the points of the ladder chart: max expected signal photons at 1% error versus background per window.
+"""Collect ladder-chart points: peak expected signal photons at 1% error versus background per channel or slot.
 
 Lines: threshold (one detector, monotone design), banded (one detector), two separable channels (each channel
-gets the background), arrival time (4 slots). Background is not counted in the cost.
+gets the background), arrival time (4 slots, each gets the background). Background is not counted in the cost.
+Equal background values therefore do not match total background, observation time, or readout resources.
 Sources:
   threshold, banded at bg 0   : results/leakage.json era designs, src/threshold_optimum.py (321.54) and src/banded.py (196.59)
   threshold, banded at bg > 0 : results/ladder_opt.jsonl (queues/qLadder.sh, src/opt.py with BG), nominal gain
   two channels                : computed here, stored 106.4 design rescaled, 2D LP, bisection
   arrival time                : results/timecomp.json (src/timecomp.py)
-Certified floors at bg 0: threshold 321.5366 (src/threshold_optimum.py), banded 195.53 (lb_pairwise2.py 4 200 1500 8),
-two channels 92.293135 (src/twotype_bound.py), arrival time 9.11 (src/timecomp.py --bound, loose).
+Lower bounds at bg 0: threshold 321.5366 (src/threshold_optimum.py), banded 195.53 (lb_pairwise2.py 4 200 1500 8),
+two channels 92.293135 (src/twotype_bound.py), one-hot arrival slots 2*log(50) = 7.824046 (docs/theory.md).
+The historical arrival-time local-search value 9.11 is an uncertified diagnostic, not a plotted lower bound.
 Writes results/ladder.json.   Usage: python3 src/ladder_points.py
 """
 import json, os
 import numpy as np
 from scipy.optimize import linprog
 from core import labels, pmf_matrix, scale_to_target
+from timecomp import analytic_arrival_floor
 
 BGS = [0.1, 1.0, 3.0]
 X0 = np.array([0.001, 4.701, 22.414, 52.805]); Y0 = np.array([0.001, 5.005, 23.512, 53.561])
@@ -69,8 +72,15 @@ if __name__ == "__main__":
     floors = {"threshold": {"bg": 0.0, "cost": 321.5366, "source": "src/threshold_optimum.py certified bound"},
               "banded": {"bg": 0.0, "cost": 195.53, "source": "reproduce.sh full: lb_pairwise2.py 4 200 1500 8"},
               "two_channel": {"bg": 0.0, "cost": 92.293135, "source": "results/twotype_bound.txt"},
-              "arrival_time": {"bg": 0.0, "cost": T["bound"]["value"], "source": "results/timecomp.json bound (loose)"}}
+              "arrival_time": {"bg": 0.0, "cost": analytic_arrival_floor()["value"],
+                               "formula": "2 * log(1 / (2 * error_target))",
+                               "status": "analytic necessary bound for one-hot arrival slots, evaluated in floating point",
+                               "source": "docs/theory.md; results/timecomp.json analytic_floor"}}
     json.dump({"error_target": 0.01, "cost": "max expected signal photons, background excluded",
-               "lines": lines, "certified_floor": floors}, open("results/ladder.json", "w"), indent=1)
+               "background": "counts per counted channel or slot; 1 for threshold/banded, 2 for two_channel, 4 for arrival_time",
+               "resource_caveat": "Equal background values do not match total background, observation time, or readout resources.",
+               "lines": lines, "certified_floor": floors,
+               "uncertified_diagnostics": {"arrival_time_pairwise_search": T["pairwise_search_diagnostic"]}},
+              open("results/ladder.json", "w"), indent=1)
     for k, v in lines.items():
         print(k, [(p["bg"], round(p["cost"], 2)) for p in v])

@@ -53,8 +53,8 @@ def main():
     e_lp, dec = lp_minimax(m, lab, return_decoder=True)
     print(f"LP (randomized) decoder on the same encoding: worst error {100*e_lp:.4f}%")
     P, s = budget_for_shape(X, Y)
-    print(f"Budget after rescaling the shape with the LP decoder (core.budget_for_shape): {P:.2f} (scale {s:.5f})")
-    print("(published figure 196.75; the current core.py gives about 196.69)")
+    print(f"Budget after rescaling the shape with the LP decoder (core.budget_for_shape): {P:.6f} (scale {s:.7f})")
+    print("(numerical boundary; 196.70 is a feasible rounded-up budget; the earlier 196.75 also passes)")
 
 
 if __name__ == "__main__":
