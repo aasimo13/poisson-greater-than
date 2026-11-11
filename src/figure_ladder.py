@@ -20,7 +20,7 @@ for key, (label, col, mk) in STYLE.items():
     f = D["certified_floor"].get(key)
     if f:
         ax.plot([f["bg"]], [f["cost"]], marker="_", color=col, ms=16, mew=2.5, ls="none")
-ax.plot([], [], marker="_", color="gray", ms=14, mew=2.5, ls="none", label="Certified floor at zero background\n(arrival time floor is loose)")
+ax.plot([], [], marker="_", color="gray", ms=14, mew=2.5, ls="none", label="Floor at zero background\n(arrival time floor is proved but loose)")
 ax.set_xscale("symlog", linthresh=0.05, linscale=0.35)
 ax.set_yscale("log")
 ax.set_xlim(-0.01, 4.5); ax.set_ylim(7, 600)

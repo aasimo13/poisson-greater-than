@@ -1,0 +1,343 @@
+{
+ "question": "min max(x) + max(y) so that the one bit output is 1 with probability within eps of sigmoid((A - B) / T) for all 16 pairs (T = 0: 1 / 0.5 / 0)",
+ "eps": 0.01,
+ "K": 4,
+ "temperatures": [0, 0.25, 0.5, 1, 2, 4],
+ "reading": "cost = cheapest design found: a numerical upper bound (searched table, LP decoder, the stored decoder rechecked in mpmath with the truncated tail charged). floor = lower bound for any encoder and decoder of that class, with its own status. No cost is proved optimal. Costs are scaled to error eps - 2e-8, so their relative excess over the scale that hits eps exactly is about 1e-6: quote them to 2 or 3 decimals. Floors are rounded down. A wider class never costs more: two channels <= one detector and arrival time <= one detector (add up the slots).",
+ "classes": {
+  "one_detector": {
+   "0": {
+    "cost": 116.46193278462634,
+    "family": "free",
+    "same_table_as": "ramp",
+    "table_source": "ramp row (the wider search did not beat it)",
+    "worst_deviation_mpmath": 0.00999997994167074,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 116.44,
+    "floor_status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)",
+    "floor_source": "results/soft_floor_shared.json",
+    "chain_floor": 39.6463,
+    "pairwise_milp_floor": 116.44,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.0001883612558085
+   },
+   "0.25": {
+    "cost": 78.35651070753434,
+    "family": "free",
+    "same_table_as": "ramp",
+    "table_source": "ramp row (the wider search did not beat it)",
+    "worst_deviation_mpmath": 0.009999979786970585,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 78.28,
+    "floor_status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)",
+    "floor_source": "results/soft_floor_shared.json",
+    "chain_floor": 27.7569,
+    "pairwise_milp_floor": 78.28,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.000977397899008
+   },
+   "0.5": {
+    "cost": 27.254427218358483,
+    "family": "free",
+    "same_table_as": "ramp",
+    "table_source": "ramp row (the wider search did not beat it)",
+    "worst_deviation_mpmath": 0.009999979960331709,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 27.01,
+    "floor_status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)",
+    "floor_source": "results/soft_floor_shared.json",
+    "chain_floor": 11.2509,
+    "pairwise_milp_floor": 27.01,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.0090495082694735
+   },
+   "1": {
+    "cost": 8.513295556605708,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the seed",
+    "worst_deviation_mpmath": 0.009999979947027688,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 8.06,
+    "floor_status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)",
+    "floor_source": "results/soft_floor_shared.json",
+    "chain_floor": 4.2881,
+    "pairwise_milp_floor": 8.06,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.0562401434994675
+   },
+   "2": {
+    "cost": 3.282202435522093,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the stored table",
+    "worst_deviation_mpmath": 0.009999979830871294,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 2.571,
+    "floor_status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)",
+    "floor_source": "results/soft_floor_shared.json",
+    "chain_floor": 1.8693,
+    "pairwise_milp_floor": 2.571,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.2766248290634354
+   },
+   "4": {
+    "cost": 1.190779241148002,
+    "family": "free",
+    "same_table_as": "ramp",
+    "table_source": "ramp row (the wider search did not beat it)",
+    "worst_deviation_mpmath": 0.009999979993203446,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 0.7856,
+    "floor_status": "proved pairwise bound for two separable channels, which one detector cannot beat (soft_core.chain_floor, evaluated in floats, rounded down); loose for one detector",
+    "floor_source": "results/soft_shared.json (chain_floor)",
+    "chain_floor": 0.7856,
+    "pairwise_milp_floor": 0.785,
+    "pairwise_milp_note": null,
+    "source": "results/soft_shared.json",
+    "cost_over_floor": 1.5157576898523448
+   }
+  },
+  "two_channels": {
+   "0": {
+    "cost": 55.61083263129363,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the seed (search from the seeds alone)",
+    "worst_deviation_mpmath": 0.009999979981897575,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 39.6463,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.4026739602760823
+   },
+   "0.25": {
+    "cost": 38.97185969133295,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the seed (search from the seeds alone)",
+    "worst_deviation_mpmath": 0.009999979951075452,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 27.7569,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.4040422270258188
+   },
+   "0.5": {
+    "cost": 15.489308470000001,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "rescaled, no search: seed",
+    "worst_deviation_mpmath": 0.00999997981549544,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 11.2509,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.3767172821729818
+   },
+   "1": {
+    "cost": 5.378893787437185,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the seed (search from the seeds alone)",
+    "worst_deviation_mpmath": 0.00999997982478595,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 4.2881,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.254376947234716
+   },
+   "2": {
+    "cost": 1.9565996080946475,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the seed (search from the seeds alone)",
+    "worst_deviation_mpmath": 0.009999979939654926,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 1.8693,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.0467017643474281
+   },
+   "4": {
+    "cost": 0.8256595505161023,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 levels from the equal optimum (search from the seeds alone)",
+    "worst_deviation_mpmath": 0.009999979895421125,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 0.7856,
+    "floor_status": "proved pairwise bound (soft_core.chain_floor, Neyman-Pearson chain), evaluated in floats, rounded down; valid for any encoder and decoder, not tight",
+    "floor_source": "results/soft_twochan.json (chain_floor)",
+    "source": "results/soft_twochan.json",
+    "cost_over_floor": 1.0509922995367902
+   }
+  },
+  "arrival_time": {
+   "0": {
+    "cost": 19.310772513550685,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 pulse energies from the seed 0",
+    "worst_deviation_mpmath": 0.009999979970801227,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 7.824,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 2.468145771159341
+   },
+   "0.25": {
+    "cost": 17.377152217842582,
+    "family": "free",
+    "same_table_as": "flat",
+    "table_source": "flat row (the wider search did not beat it)",
+    "worst_deviation_mpmath": 0.009999979951538392,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 6.5234,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 2.6638182876786005
+   },
+   "0.5": {
+    "cost": 10.571869512713146,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 pulse energies from the stored table",
+    "worst_deviation_mpmath": 0.009999979945295933,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 3.7006,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 2.8567987657982883
+   },
+   "1": {
+    "cost": 5.498128853119173,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 pulse energies from the stored table",
+    "worst_deviation_mpmath": 0.009999979766999352,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 1.7922,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 3.0678098722905776
+   },
+   "2": {
+    "cost": 2.5706923025330237,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 pulse energies from the stored table",
+    "worst_deviation_mpmath": 0.009999979534158874,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 0.8114,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 3.1682182678494253
+   },
+   "4": {
+    "cost": 0.934552649652119,
+    "family": "free",
+    "same_table_as": null,
+    "table_source": "Nelder-Mead on 8 pulse energies from the stored table",
+    "worst_deviation_mpmath": 0.009999979968863686,
+    "cost_status": "numerical upper bound (searched table, LP decoder, stored decoder rechecked in mpmath)",
+    "floor": 0.3597,
+    "floor_status": "proved (disjoint support, closed form -ln(1 - gap + 2 eps) per sender); loose",
+    "floor_source": "results/soft_time.json (disjoint_floor)",
+    "source": "results/soft_time.json",
+    "cost_over_floor": 2.598144702952791
+   }
+  }
+ },
+ "strict_comparison_reference": {
+  "source": "results/ladder.json (output [A > B], ties false, eps 0.01, no background)",
+  "one_detector_threshold": {
+   "cost": 321.54,
+   "floor": 321.5366
+  },
+  "one_detector_banded": {
+   "cost": 196.62,
+   "floor": 195.53
+  },
+  "two_channels": {
+   "cost": 106.366,
+   "floor": 92.293135
+  },
+  "arrival_time": {
+   "cost": 20.972184273337465,
+   "floor": 7.824,
+   "floor_status": "proved (soft_time.disjoint_floor on the strict target, 2 ln 50), loose",
+   "timecomp_bound_value_not_a_floor": 9.111450675264145,
+   "timecomp_bound_note": "An earlier README and ladder.json listed 9.11 as a loose floor. It is the end point of a Nelder-Mead search over three pairwise conditions (timecomp.py --bound); the same three conditions are met at cost 9.1022 (A0, A1, B0, B1 = 0, 4.59512, 4.50711, 2.91509), so 9.11 is not a floor and is not used here"
+  }
+ },
+ "closed_form_fit_errors": {
+  "F1_no_light_temperature": {
+   "value": 74.9899989331097,
+   "kind": "exact",
+   "dark_lp_error_just_above": 0.009990012650235691,
+   "dark_lp_error_just_below": 0.010010007336451632
+  },
+  "F2_first_chain_step_T0_ln49": {
+   "value": 3.8918202981106265,
+   "kind": "exact",
+   "max_abs_error": 9.815703805315934e-12
+  },
+  "F3_K2_two_channel_floor": {
+   "kind": "exact floor value",
+   "max_abs_error": 1.9631407610631868e-11,
+   "attained_at_T": [2]
+  },
+  "F4_skellam_chain_equal_tables_T0": {
+   "value": 55.90647625103662,
+   "kind": "exact for x = y",
+   "rel_error_vs_stored_equal_family": 6.317986667561851e-07
+  },
+  "F4_gaussian_recursion": {
+   "value": 57.66100084566206,
+   "kind": "approximation",
+   "rel_error": 0.031383208391584226
+  },
+  "F5_single_threshold_ramp_T0": {
+   "value": 116.46183256514269,
+   "kind": "exact for the ramp",
+   "rel_error_vs_stored_ramp": 8.605342643698179e-07
+  },
+  "F5_square_root_rule": {
+   "value": 110.64324130472895,
+   "kind": "approximation, low",
+   "rel_error": 0.04996135757316993
+  },
+  "F6_arrival_time_floor": {
+   "kind": "restatement of the proved floor",
+   "max_abs_diff": 6.661338147750939e-16
+  },
+  "F7_threshold_design_strict": {
+   "kind": "approximation",
+   "max_abs_rel_error_K3_to_10": 0.0009699163645059729
+  },
+  "F8_peeled_band_strict_exact_start": {
+   "kind": "approximation of the pairwise budget",
+   "max_abs_rel_error_K3_to_8": 0.0010405030313786617
+  },
+  "F8_peeled_band_strict_ln100_start": {
+   "kind": "fit",
+   "max_abs_rel_error_K3_to_8": 0.00019543967129261557
+  }
+ }
+}

@@ -9,7 +9,9 @@ counted as error, so every number is conservative).
 Modes (run from the repo root, writes/updates results/timecomp.json):
   python3 src/timecomp.py            verify the stored winner: LP error, cost, mpmath recheck
   python3 src/timecomp.py --beta     fixed shape rescale bisection at beta 0.1, 0.5, 1 (a few minutes to about 20)
-  python3 src/timecomp.py --bound    lower bound from three pairwise Neyman-Pearson constraints (about 1 minute)
+  python3 src/timecomp.py --bound    local search over three pairwise Neyman-Pearson constraints (about 1 minute).
+                                     NOT a floor: it prints 9.11 but a point at 9.10 meets the same constraints.
+                                     The proved floor is 2 ln 50 = 7.82 (src/soft_time.py disjoint_floor).
 """
 import sys, os, json, time
 import numpy as np
@@ -165,7 +167,7 @@ def bound():
             best = (r.fun, np.abs(r.x))
     print(f"BOUND (3 pair constraints, 4 variables): {best[0]:.4f}  at A0,A1,B0,B1 = {np.round(best[1], 4).tolist()}")
     save("bound", {"value": float(best[0]), "vars_A0_A1_B0_B1": best[1].tolist(),
-                   "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2; loose (not certified tight)"})
+                   "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2; a local search result, NOT a floor (proved floor: 2 ln 50 = 7.82)"})
 
 
 if __name__ == "__main__":
