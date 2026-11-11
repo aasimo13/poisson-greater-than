@@ -187,8 +187,8 @@
   },
   "arrival_time": {
    "bg": 0.0,
-   "cost": 9.111450675264145,
-   "source": "results/timecomp.json bound (loose)"
+   "cost": 7.824046010856292,
+   "source": "proved, 2 ln 50: src/soft_time.py disjoint_floor on the strict target (loose)"
   }
  }
 }

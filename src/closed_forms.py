@@ -469,8 +469,8 @@ def summary():
             "arrival_time": {"cost": lad["lines"]["arrival_time"][0]["cost"],
                              "floor": strict_time["value"],
                              "floor_status": "proved (soft_time.disjoint_floor on the strict target, 2 ln 50), loose",
-                             "ladder_json_value_not_a_floor": lad["certified_floor"]["arrival_time"]["cost"],
-                             "ladder_json_note": "ladder.json and the README list 9.11 as a loose floor. It is the end point "
+                             "timecomp_bound_value_not_a_floor": json.load(open("results/timecomp.json"))["bound"]["value"],
+                             "timecomp_bound_note": "An earlier README and ladder.json listed 9.11 as a loose floor. It is the end point "
                                                  "of a Nelder-Mead search over three pairwise conditions (timecomp.py "
                                                  "--bound); the same three conditions are met at cost 9.1022 "
                                                  "(A0, A1, B0, B1 = 0, 4.59512, 4.50711, 2.91509), so 9.11 is not a "

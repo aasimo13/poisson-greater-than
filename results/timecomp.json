@@ -26,7 +26,7 @@
    4.516282350154448,
    2.7563248270275813
   ],
-  "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2; loose (not certified tight)"
+  "source": "3 pairwise NP constraints, 12 random Nelder-Mead starts, seed 2; a local search result, NOT a floor (proved floor: 2 ln 50 = 7.82)"
  },
  "beta_costs": {
   "0.1": 28.982753492378876,

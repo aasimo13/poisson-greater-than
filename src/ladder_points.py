@@ -8,7 +8,8 @@ Sources:
   two channels                : computed here, stored 106.4 design rescaled, 2D LP, bisection
   arrival time                : results/timecomp.json (src/timecomp.py)
 Certified floors at bg 0: threshold 321.5366 (src/threshold_optimum.py), banded 195.53 (lb_pairwise2.py 4 200 1500 8),
-two channels 92.293135 (src/twotype_bound.py), arrival time 9.11 (src/timecomp.py --bound, loose).
+two channels 92.293135 (src/twotype_bound.py), arrival time 2 ln 50 = 7.824 (proved, loose: src/soft_time.py disjoint_floor).
+The 9.11 that src/timecomp.py --bound prints is a local search result, not a floor.
 Writes results/ladder.json.   Usage: python3 src/ladder_points.py
 """
 import json, os
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     floors = {"threshold": {"bg": 0.0, "cost": 321.5366, "source": "src/threshold_optimum.py certified bound"},
               "banded": {"bg": 0.0, "cost": 195.53, "source": "reproduce.sh full: lb_pairwise2.py 4 200 1500 8"},
               "two_channel": {"bg": 0.0, "cost": 92.293135, "source": "results/twotype_bound.txt"},
-              "arrival_time": {"bg": 0.0, "cost": T["bound"]["value"], "source": "results/timecomp.json bound (loose)"}}
+              "arrival_time": {"bg": 0.0, "cost": 2 * float(np.log(50)), "source": "proved, 2 ln 50: src/soft_time.py disjoint_floor on the strict target (loose)"}}
     json.dump({"error_target": 0.01, "cost": "max expected signal photons, background excluded",
                "lines": lines, "certified_floor": floors}, open("results/ladder.json", "w"), indent=1)
     for k, v in lines.items():
