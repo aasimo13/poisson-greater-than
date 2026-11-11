@@ -111,6 +111,29 @@ quick() {
   check "margin 2 (K=4) deterministic design, worst error %" \
     "$(sed -n 's/.*worst error = \([0-9.]*\)%.*/\1/p' "$TMP/tf.txt")" 0.99995769 0.0000001
 
+  echo "== 11. sampled comparison (soft_selftest, soft_shared, soft_twochan, soft_time, soft_floor_shared, closed_forms)"
+  $PY src/soft_selftest.py > "$TMP/ss.txt" 2>&1; cut -c1-150 "$TMP/ss.txt" | show
+  check "sampled: self test, ALL PASS (1 = yes)" "$(grep -c '^ALL PASS' "$TMP/ss.txt")" 1 0
+  check "sampled: self test, FAIL lines" "$(grep -c '^FAIL' "$TMP/ss.txt")" 0 0
+  sc() { awk -v t="T=$2" '$1=="PASS" && $2==t {for(i=3;i<NF;i++) if($i==k){print $(i+1); exit}}' k="$3" "$TMP/$1.txt"; }
+  $PY src/soft_shared.py > "$TMP/s1.txt" 2>&1; cut -c1-150 "$TMP/s1.txt" | show
+  $PY src/soft_twochan.py > "$TMP/s2.txt" 2>&1; cut -c1-150 "$TMP/s2.txt" | show
+  $PY src/soft_time.py > "$TMP/s3.txt" 2>&1; cut -c1-150 "$TMP/s3.txt" | show
+  $PY src/soft_floor_shared.py > "$TMP/s4.txt" 2>&1; cut -c1-150 "$TMP/s4.txt" | show
+  for f in s1 s2 s3 s4; do check "sampled: $f stored designs recheck, ALL PASS (1 = yes)" "$(grep -c '^ALL PASS' "$TMP/$f.txt")" 1 0; done
+  for tv in 0:116.46 1:8.51; do check "sampled: one detector cost, T=${tv%%:*}" "$(sc s1 ${tv%%:*} cost)" "${tv##*:}" 0.005; done
+  for tv in 0:55.61 1:5.38; do check "sampled: two channels cost, T=${tv%%:*}" "$(sc s2 ${tv%%:*} cost)" "${tv##*:}" 0.005; done
+  for tv in 0:19.31 1:5.50; do check "sampled: arrival time cost, T=${tv%%:*}" "$(sc s3 ${tv%%:*} cost)" "${tv##*:}" 0.005; done
+  check_ge "sampled: one detector floor, T=0 (stored MILP bound)" "$(sc s1 0 floor)" 116.44
+  check_ge "sampled: two channel chain floor, T=0" "$(sc s2 0 floor)" 39.646
+  check_ge "sampled: arrival time floor, T=0 (2 ln 50)" "$(sc s3 0 floor)" 7.824
+  check "sampled: worst deviation of stored decoders (mpmath), max over classes" \
+    "$(cat "$TMP/s1.txt" "$TMP/s2.txt" "$TMP/s3.txt" | awk '$1=="PASS"{for(i=3;i<NF;i++) if($i=="mp_error" && $(i+1)>m) m=$(i+1)} END{print m}')" 0.00999998 0.00000002
+  SOFT_CLOSED_OUT="$TMP/cf.json" SOFT_SUMMARY_OUT="$TMP/sum.json" $PY src/closed_forms.py > "$TMP/cf.txt" 2>&1; cut -c1-150 "$TMP/cf.txt" | show
+  check "closed forms, ALL PASS (1 = yes)" "$(grep -c '^ALL PASS' "$TMP/cf.txt")" 1 0
+  check "closed forms: threshold formula K=3..10 within 0.1% (1 = yes)" "$(grep -c '^PASS  F7' "$TMP/cf.txt")" 1 0
+  check "closed forms: band recursion K=3..8 within 0.1% (1 = yes)" "$(grep -c '^PASS  F8' "$TMP/cf.txt")" 1 0
+
   echo
   echo "============ SUMMARY ============"
   printf '%-60s %-14s %-14s %s\n' check got expected status

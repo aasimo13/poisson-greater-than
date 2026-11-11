@@ -1,0 +1,296 @@
+{
+ "eps": 0.01,
+ "forms": {
+  "F1_no_light_temperature": {
+   "T_star": 74.9899989331097,
+   "formula": "(K - 1) / ln((1/2 + eps) / (1/2 - eps))",
+   "status": "exact",
+   "lp_error_dark_just_above": 0.009990012650235691,
+   "lp_error_dark_just_below": 0.010010007336451632
+  },
+  "F2_first_chain_step": {
+   "T0_value": 3.8918202981106265,
+   "T0_formula": "ln((1/2 - eps) / eps) = ln 49",
+   "strict_value": 4.59511985013459,
+   "status": "exact",
+   "max_abs_error_vs_min_hi": 9.815703805315934e-12,
+   "cases": 206
+  },
+  "F3_K2_floor": {
+   "formula": "2 max(ln((1/2 - eps) / (1 - sg + eps)), ln((sg - eps) / (1/2 + eps))), sg = sigmoid(1 / T)",
+   "status": "exact value of the pairwise floor (chain_floor for K = 2), not an optimum: a design attains it only where the rows say so (T = 2 here); the formula is 0 from T = 12.5 although light is needed until T = 25 (F1 with K = 2)",
+   "max_abs_error_vs_chain_floor": 1.9631407610631868e-11,
+   "rows": [
+    {
+     "T": 0,
+     "floor": 7.783640596221253,
+     "chain_floor": 7.7836405962016215,
+     "lp_error_at_floor_y_reversed": 0.01920767605773266,
+     "lp_error_at_floor_y_same": 0.01020407766707987,
+     "attained": false
+    },
+    {
+     "T": 0.25,
+     "floor": 5.725387007203936,
+     "chain_floor": 5.725387007196787,
+     "lp_error_at_floor_y_reversed": 0.0321894210687973,
+     "lp_error_at_floor_y_same": 0.010571138967638505,
+     "attained": false
+    },
+    {
+     "T": 0.5,
+     "floor": 2.666042367483308,
+     "chain_floor": 2.6660423674818503,
+     "lp_error_at_floor_y_reversed": 0.05212486759759927,
+     "lp_error_at_floor_y_same": 0.012636776753828571,
+     "attained": false
+    },
+    {
+     "T": 1,
+     "floor": 1.1268071811503289,
+     "chain_floor": 1.1268071811496156,
+     "lp_error_at_floor_y_reversed": 0.02575134845988647,
+     "lp_error_at_floor_y_same": 0.015692666032443237,
+     "attained": false
+    },
+    {
+     "T": 2,
+     "floor": 0.46916919216233893,
+     "chain_floor": 0.46916919216187125,
+     "lp_error_at_floor_y_reversed": 0.009999994923846844,
+     "lp_error_at_floor_y_same": 0.017908983964251113,
+     "attained": true
+    },
+    {
+     "T": 4,
+     "floor": 0.18001242301963236,
+     "chain_floor": 0.18001242301920684,
+     "lp_error_at_floor_y_reversed": 0.017294523316371158,
+     "lp_error_at_floor_y_same": 0.019139250971015764,
+     "attained": false
+    },
+    {
+     "T": 8,
+     "floor": 0.046283988832969164,
+     "chain_floor": 0.04628398883255613,
+     "lp_error_at_floor_y_reversed": 0.019640440189832686,
+     "lp_error_at_floor_y_same": 0.019771236147457738,
+     "attained": false
+    }
+   ]
+  },
+  "F4_equal_tables_T0": {
+   "skellam_chain_levels": [0.0, 3.912023005428146, 13.226376884377895, 27.95323812551831],
+   "skellam_chain_cost": 55.90647625103662,
+   "status": "exact for the family x = y at T = 0",
+   "lp_error_at_chain": 0.010000000017680965,
+   "stored_equal_family_cost": 55.9065115726961,
+   "rel_error_vs_stored": 6.317986667561851e-07,
+   "gaussian_levels": [0.0, 3.912023005428146, 13.665314498602417, 28.83050042283103],
+   "gaussian_cost": 57.66100084566206,
+   "gaussian_rel_error": 0.031383208391584226,
+   "gaussian_formula": "L(k+1) = L(k) + z^2 / 2 + z sqrt(2 L(k) + z^2 / 4), z = z(1 - eps), L(1) = ln(1 / (2 eps))",
+   "gaussian_status": "approximation"
+  },
+  "F5_ramp_T0": {
+   "g": 19.41030542752378,
+   "cost": 116.46183256514269,
+   "status": "exact for the ramp family at T = 0 (one randomized threshold, Poisson cdf)",
+   "lp_error_at_g": 0.009999997669201587,
+   "lp_error_at_0.999g": 0.010021674064571866,
+   "stored_ramp_cost": 116.46193278462634,
+   "rel_error_vs_stored": 8.605342643698179e-07,
+   "sqrt_rule_g": 18.440540217454824,
+   "sqrt_rule_cost": 110.64324130472895,
+   "sqrt_rule_rel_error": 0.04996135757316993,
+   "sqrt_rule_formula": "g = ((z(1 - eps) - z(1/2 + eps)) / (2 (2 - sqrt 3)))^2, from 2 sqrt(4 g) - 2 sqrt(3 g) = z(1 - eps) - z(1/2 + eps)",
+   "sqrt_rule_status": "approximation, about 5% low"
+  },
+  "F6_arrival_time_floor": {
+   "formula": "2 (-ln(1 - gap + 2 eps)), gap = sigmoid(2 / T) - sigmoid(-1 / T); T = 0: 2 ln 50",
+   "status": "restatement of soft_time.disjoint_floor (proved, loose), not an independent check",
+   "max_abs_diff_vs_disjoint_floor": 6.661338147750939e-16,
+   "rows": [
+    {
+     "T": 0,
+     "floor": 7.824046010856292,
+     "stored_floor_raw": 7.824046010856292,
+     "stored_best_cost": 19.310772513550685
+    },
+    {
+     "T": 0.25,
+     "floor": 6.5234852289613885,
+     "stored_floor_raw": 6.5234852289613885,
+     "stored_best_cost": 17.377152217842582
+    },
+    {
+     "T": 0.5,
+     "floor": 3.7006110726749286,
+     "stored_floor_raw": 3.7006110726749286,
+     "stored_best_cost": 10.571869512713146
+    },
+    {
+     "T": 1,
+     "floor": 1.792268768641113,
+     "stored_floor_raw": 1.7922687686411136,
+     "stored_best_cost": 5.498128853119173
+    },
+    {
+     "T": 2,
+     "floor": 0.8114840223801473,
+     "stored_floor_raw": 0.8114840223801473,
+     "stored_best_cost": 2.5706923025330237
+    },
+    {
+     "T": 4,
+     "floor": 0.3597750399433,
+     "stored_floor_raw": 0.3597750399433,
+     "stored_best_cost": 0.934552649652119
+    }
+   ]
+  },
+  "F7_threshold_design_strict": {
+   "formula": "2 (K - 1) z^2 / (sqrt(K - 1) - sqrt(K - 2))^2, z = z(1 - eps)",
+   "status": "approximation",
+   "exact_source": "threshold_optimum.minimize_P(K, 'low')",
+   "max_abs_rel_error": 0.0009699163645059729,
+   "max_abs_rel_error_K_ge_4": 0.0003312325329203149,
+   "rows": [
+    {
+     "K": 3,
+     "exact": 126.04907213508517,
+     "formula": 126.17132919287978,
+     "rel_error": 0.0009699163645059729,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 4,
+     "exact": 321.5398961805935,
+     "formula": 321.43339170634664,
+     "rel_error": -0.0003312325329203149,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 5,
+     "exact": 603.0925138712131,
+     "formula": 603.0237239721682,
+     "rel_error": -0.0001140619348817894,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 6,
+     "exact": 971.2111092518767,
+     "formula": 971.1250521904918,
+     "rel_error": -8.860798704324869e-05,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 7,
+     "exact": 1425.531739321281,
+     "formula": 1425.782062993189,
+     "rel_error": 0.0001756002093836361,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 8,
+     "exact": 1966.9597633796543,
+     "formula": 1967.0111523068629,
+     "rel_error": 2.6126069361107007e-05,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 9,
+     "exact": 2594.717591450568,
+     "formula": 2594.819769014334,
+     "rel_error": 3.937906926851372e-05,
+     "minimum_at_corner": true
+    },
+    {
+     "K": 10,
+     "exact": 3308.93413829714,
+     "formula": 3309.2117884487852,
+     "rel_error": 8.390924087353811e-05,
+     "minimum_at_corner": true
+    }
+   ],
+   "note": "eps = 0.01 only; the corner step is numerical per K"
+  },
+  "F8_peeled_band_strict": {
+   "formula": "C_2 = 2 ln((1 - eps) / eps), C_K = 2 (sqrt(C_(K-1)) + z)^2, z = z(1 - eps)",
+   "status": "approximation of the pairwise budget 2 v_(K-1) with the exact start; with the start 2 ln(1 / eps) it is a fit; neither is an upper bound or a floor",
+   "max_abs_rel_error_exact_start": 0.0010405030313786617,
+   "max_abs_rel_error_ln100_start": 0.00019543967129261557,
+   "rows": [
+    {
+     "K": 3,
+     "pairwise_budget": 57.47374396808821,
+     "exact_start": 57.41394236326473,
+     "exact_start_rel_error": -0.0010405030313786617,
+     "ln100_start": 57.48497661771729,
+     "ln100_start_rel_error": 0.00019543967129261557,
+     "lp_budget": 57.55801352851587,
+     "lp_budget_over_pairwise": 1.001466227091008,
+     "threshold_design": 126.04907213508517,
+     "band_cheaper_than_threshold": true
+    },
+    {
+     "K": 4,
+     "pairwise_budget": 196.32871372912237,
+     "exact_start": 196.16047530197056,
+     "exact_start_rel_error": -0.0008569221687252894,
+     "ln100_start": 196.34614813183393,
+     "ln100_start_rel_error": 8.880210327060235e-05,
+     "lp_budget": 196.61646335050992,
+     "lp_budget_over_pairwise": 1.001465652251889,
+     "threshold_design": 321.5398961805935,
+     "band_cheaper_than_threshold": true
+    },
+    {
+     "K": 5,
+     "pairwise_budget": 533.8407392087026,
+     "exact_start": 533.4735411258338,
+     "exact_start_rel_error": -0.0006878420021168767,
+     "ln100_start": 533.9065526076376,
+     "ln100_start_rel_error": 0.00012328283343935055,
+     "lp_budget": 534.6233949598693,
+     "lp_budget_over_pairwise": 1.0014660847209353,
+     "threshold_design": 603.0925138712131,
+     "band_cheaper_than_threshold": true
+    },
+    {
+     "K": 6,
+     "pairwise_budget": 1293.494142277855,
+     "exact_start": 1292.6979279989898,
+     "exact_start_rel_error": -0.0006155530611549548,
+     "ln100_start": 1293.651159604514,
+     "ln100_start_rel_error": 0.0001213900562260039,
+     "lp_budget": 1295.3911350868677,
+     "lp_budget_over_pairwise": 1.0014665646693013,
+     "threshold_design": 971.2111092518767,
+     "band_cheaper_than_threshold": false
+    },
+    {
+     "K": 7,
+     "pairwise_budget": 2932.48650079491,
+     "exact_start": 2930.7867016382047,
+     "exact_start_rel_error": -0.0005796443244477687,
+     "ln100_start": 2932.8164964934076,
+     "ln100_start_rel_error": 0.00011253102048653572,
+     "threshold_design": 1425.531739321281,
+     "band_cheaper_than_threshold": false
+    },
+    {
+     "K": 8,
+     "pairwise_budget": 6379.706800580204,
+     "exact_start": 6376.1607593674935,
+     "exact_start_rel_error": -0.000555831376512148,
+     "ln100_start": 6380.394766361733,
+     "ln100_start_rel_error": 0.00010783658293925146,
+     "threshold_design": 1966.9597633796543,
+     "band_cheaper_than_threshold": false
+    }
+   ],
+   "note": "eps = 0.01 only. The peeled band construction is cheaper than the threshold design up to K = 5 and dearer from K = 6 (at K = 6 already its pairwise budget, which the LP budget exceeds, is above the threshold cost). This compares two constructions; no floor is known for K >= 5."
+  }
+ }
+}

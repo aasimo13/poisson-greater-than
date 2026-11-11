@@ -1,0 +1,270 @@
+{
+ "model": "one detector, pairwise relaxation MILP (see src/soft_floor_shared.py)",
+ "eps": 0.01,
+ "T": {
+  "0": {
+   "T": 0.0,
+   "value": 116.44,
+   "raw_dual_bound": 116.4459621813566,
+   "pmax": 116.48,
+   "design_cost": 116.46193278462634,
+   "chain_floor": 39.6463,
+   "stages": [
+    {
+     "pmax": 116.48,
+     "segments": 40,
+     "rows": 5865,
+     "cols": 2674,
+     "pairs": 84,
+     "status": "Optimal",
+     "time": 160.7,
+     "dual_bound": 116.35679036944863,
+     "primal": 116.35679036944863,
+     "x": [0.0, 19.392798394908134, 38.785596789816225, 58.17839518472433],
+     "y": [58.1783951847243, 38.78559678981617, 19.392798394908066, 0.0],
+     "best_lb": 116.35679036944863
+    },
+    {
+     "pmax": 116.48,
+     "segments": 52,
+     "rows": 7017,
+     "cols": 3442,
+     "pairs": 84,
+     "status": "Optimal",
+     "time": 129.7,
+     "dual_bound": 116.41323708049403,
+     "primal": 116.41323708049403,
+     "x": [0.0, 19.402206180082338, 38.804412360164676, 58.206618540247014],
+     "y": [58.206618540247014, 38.80441236016467, 19.402206180082334, 0.0],
+     "best_lb": 116.41323708049403
+    },
+    {
+     "pmax": 116.48,
+     "segments": 64,
+     "rows": 8169,
+     "cols": 4210,
+     "pairs": 84,
+     "status": "Optimal",
+     "time": 284.8,
+     "dual_bound": 116.41953704740192,
+     "primal": 116.41953704740192,
+     "x": [-0.0, 19.404611968398726, 38.807596984199364, 58.210582],
+     "y": [58.208955047401915, 38.80597003160128, 19.40298501580064, -0.0],
+     "best_lb": 116.41953704740192
+    },
+    {
+     "pmax": 116.48,
+     "segments": 72,
+     "rows": 8937,
+     "cols": 4722,
+     "pairs": 84,
+     "status": "Optimal",
+     "time": 286.7,
+     "dual_bound": 116.4459621813566,
+     "primal": 116.44606079587713,
+     "x": [0.0, 19.407676799312846, 38.815353598625705, 58.22303039793856],
+     "y": [58.223030397938565, 38.815353598625705, 19.407676799312853, 0.0],
+     "best_lb": 116.4459621813566
+    }
+   ],
+   "run": {
+    "seconds": 1440.0,
+    "refinements": 3,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  },
+  "0.25": {
+   "T": 0.25,
+   "value": 78.28,
+   "raw_dual_bound": 78.28488375557446,
+   "pmax": 78.37,
+   "design_cost": 78.35651070753434,
+   "chain_floor": 27.7569,
+   "stages": [
+    {
+     "pmax": 78.37,
+     "segments": 38,
+     "rows": 10661,
+     "cols": 4066,
+     "pairs": 84,
+     "status": "Optimal",
+     "time": 153.4,
+     "dual_bound": 78.28488375557446,
+     "primal": 78.28488375557446,
+     "x": [0.0, 13.047480625929078, 26.094961251858148, 39.142441877787235],
+     "y": [39.14244187778723, 26.094961251858155, 13.04748062592908, 0.0],
+     "best_lb": 78.28488375557446
+    }
+   ],
+   "run": {
+    "seconds": 900.0,
+    "refinements": 0,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  },
+  "0.5": {
+   "T": 0.5,
+   "value": 27.01,
+   "raw_dual_bound": 27.01272150016129,
+   "pmax": 27.27,
+   "design_cost": 27.254427218358483,
+   "chain_floor": 11.2509,
+   "stages": [
+    {
+     "pmax": 27.27,
+     "segments": 35,
+     "rows": 11413,
+     "cols": 4402,
+     "pairs": 102,
+     "status": "Optimal",
+     "time": 46.0,
+     "dual_bound": 26.988510581914905,
+     "primal": 26.988510581914905,
+     "x": [0.0, 4.498085096985817, 8.996170193971633, 13.494255290957451],
+     "y": [13.494255290957453, 8.996170193971635, 4.498085096985817, 0.0],
+     "best_lb": 26.988510581914905
+    },
+    {
+     "pmax": 27.27,
+     "segments": 49,
+     "rows": 15453,
+     "cols": 6110,
+     "pairs": 102,
+     "status": "Optimal",
+     "time": 105.2,
+     "dual_bound": 27.01272150016129,
+     "primal": 27.01272150016129,
+     "x": [0.0, 4.5021202500268815, 9.004240500053765, 13.506360750080649],
+     "y": [13.506360750080646, 9.004240500053765, 4.5021202500268815, 0.0],
+     "best_lb": 27.01272150016129
+    }
+   ],
+   "run": {
+    "seconds": 900.0,
+    "refinements": 1,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  },
+  "1": {
+   "T": 1.0,
+   "value": 8.06,
+   "raw_dual_bound": 8.061048113994891,
+   "pmax": 8.53,
+   "design_cost": 8.513295556605708,
+   "chain_floor": 4.2881,
+   "stages": [
+    {
+     "pmax": 8.53,
+     "segments": 58,
+     "rows": 17177,
+     "cols": 7560,
+     "pairs": 106,
+     "status": "Optimal",
+     "time": 70.1,
+     "dual_bound": 7.979632771293083,
+     "primal": 7.979632771293083,
+     "x": [0.0, 1.240474765612552, 2.6596044898516813, 3.9898163856465425],
+     "y": [3.9898163856465416, 2.6596044898516906, 1.2404747656125492, 0.0],
+     "best_lb": 7.979632771293083
+    },
+    {
+     "pmax": 8.53,
+     "segments": 72,
+     "rows": 21015,
+     "cols": 9352,
+     "pairs": 106,
+     "status": "Optimal",
+     "time": 107.8,
+     "dual_bound": 8.061048113994891,
+     "primal": 8.061048113994891,
+     "x": [0.0, 1.2534638487102514, 2.6870274863985086, 4.030524056997446],
+     "y": [4.030524056997446, 2.687027486398509, 1.2534638487102507, 0.0],
+     "best_lb": 8.061048113994891
+    }
+   ],
+   "run": {
+    "seconds": 900.0,
+    "refinements": 1,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  },
+  "2": {
+   "T": 2.0,
+   "value": 2.571,
+   "raw_dual_bound": 2.57119105174253,
+   "pmax": 3.3,
+   "design_cost": 3.282202435522093,
+   "chain_floor": 1.8693,
+   "stages": [
+    {
+     "pmax": 3.3,
+     "segments": 57,
+     "rows": 16389,
+     "cols": 7432,
+     "pairs": 106,
+     "status": "Optimal",
+     "time": 126.1,
+     "dual_bound": 2.57119105174253,
+     "primal": 2.57119105174253,
+     "x": [0.0, 0.365405474128735, 0.8174715258712654, 1.285595525871265],
+     "y": [1.285595525871265, 0.8335294741287346, 0.3654054741287349, 0.0],
+     "best_lb": 2.57119105174253
+    }
+   ],
+   "run": {
+    "seconds": 900.0,
+    "refinements": 0,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  },
+  "4": {
+   "T": 4.0,
+   "value": 0.785,
+   "raw_dual_bound": 0.785531306475213,
+   "pmax": 1.21,
+   "design_cost": 1.190779241148002,
+   "chain_floor": 0.7856,
+   "stages": [
+    {
+     "pmax": 1.21,
+     "segments": 31,
+     "rows": 13327,
+     "cols": 4104,
+     "pairs": 106,
+     "status": "Optimal",
+     "time": 26.0,
+     "dual_bound": 0.7855311378021117,
+     "primal": 0.7855311378021117,
+     "x": [0.0, 0.0899447422362955, 0.24663649472087248, 0.39276556890105585],
+     "y": [0.39276556890105585, 0.2360738164164783, 0.1, -0.0],
+     "best_lb": 0.7855311378021117
+    },
+    {
+     "pmax": 1.21,
+     "segments": 47,
+     "rows": 20001,
+     "cols": 6152,
+     "pairs": 106,
+     "status": "Optimal",
+     "time": 61.9,
+     "dual_bound": 0.785531306475213,
+     "primal": 0.785531306475213,
+     "x": [0.0, 0.08994482657280706, 0.23452321114408248, 0.3927656532376065],
+     "y": [0.3927656532376065, 0.2514554944785276, 0.13525934676239348, 0.0],
+     "best_lb": 0.785531306475213
+    }
+   ],
+   "run": {
+    "seconds": 150.0,
+    "refinements": 2,
+    "highspy": "1.15.1"
+   },
+   "status": "certified: HiGHS dual bound of the pairwise relaxation over tabulated float Neyman-Pearson boundaries, rounded down; valid for any encoder and decoder up to solver tolerances; not an exact certificate; tightness not proved (compare design_cost)"
+  }
+ }
+}
